@@ -70,7 +70,7 @@ function populateStaffInfo(persons) {
 				reportData.person_job_title = p.JobTitle ? p.JobTitle : 'N/A (Job title)';
 				reportData.person_job_description = p.JobDescSimple ? p.JobDescSimple : 'N/A (Job description)';
 
-				reportData.person_work_expire_date = p.WPExpireDate;
+				reportData.person_work_permit_expire_date = p.WPExpireDate;
 
 				reportData.project_title = p.Project;
 
