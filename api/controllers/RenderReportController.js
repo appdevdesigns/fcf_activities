@@ -9,6 +9,7 @@
 var AD = require('ad-utils');
 var _ = require('lodash');
 var async = require('async');
+var moment = require('moment');
 
 function getAge(birthDate) {
     var today = new Date();
@@ -150,7 +151,8 @@ module.exports = {
 
 		var startDate = req.param('Start date');
 		if (startDate) {
-			memberFilter.WPExpireDate['>='] = startDate;
+			var startDateFormat = moment(startDate).format("YYYY-MM-DD HH:mm:ss");
+			memberFilter.WPExpireDate['>='] = startDateFormat;
 		}
 
 		var memberName = req.param('memberName');
@@ -251,7 +253,8 @@ module.exports = {
 
 				var startDate = req.param('Start date');
 				if (startDate) {
-					memberFilter.WPExpireDate['>='] = startDate;
+					var startDateFormat = moment(startDate).format("YYYY-MM-DD HH:mm:ss");
+					memberFilter.WPExpireDate['>='] = startDateFormat;
 				}
 
 				var memberName = req.param('memberName');
@@ -318,7 +321,8 @@ module.exports = {
 			results = [];
 
 		if (startDate) {
-			personFilter.WPExpireDate['>='] = startDate;
+			var startDateFormat = moment(startDate).format("YYYY-MM-DD HH:mm:ss");
+			personFilter.WPExpireDate['>='] = startDateFormat;
 		}
 
 		async.series([
@@ -377,7 +381,7 @@ module.exports = {
 						callback(null, null);
 					}
 				}, function (err, r) {
-					r = r.filter(function(t) { return t != null; });
+					r = r.filter(function (t) { return t != null; });
 					results = _.flatten(r);
 					next();
 				});
@@ -411,7 +415,8 @@ module.exports = {
 			results = [];
 
 		if (startDate) {
-			personFilter.WPExpireDate['>='] = startDate;
+			var startDateFormat = moment(startDate).format("YYYY-MM-DD HH:mm:ss");
+			personFilter.WPExpireDate['>='] = startDateFormat;
 		}
 
 		async.series([
@@ -562,7 +567,8 @@ module.exports = {
 
 				var startDate = req.param('Start date');
 				if (startDate) {
-					memberFilter.WPExpireDate['>='] = startDate;
+					var startDateFormat = moment(startDate).format("YYYY-MM-DD HH:mm:ss");
+					memberFilter.WPExpireDate['>='] = startDateFormat;
 				}
 
 

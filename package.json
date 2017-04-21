@@ -25,7 +25,8 @@
     "ad-utils": "git://github.com/appdevdesigns/ad-utils",
     "fs-extra": "^2.1.2",
     "jimp": "^0.2.27",
-    "lodash": "^4.13.1"
+    "lodash": "^4.13.1",
+    "moment": "^2.12.0"
   },
   "devDependencies": {
     "chai": "^1.10.0",
