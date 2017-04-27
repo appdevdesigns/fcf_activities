@@ -147,27 +147,28 @@ module.exports = {
 		AD.log('<green>::: renderreport.staffs() :::</green>');
 
 		// Set member name filter
-		var memberFilter = { WPExpireDate: { '!': null } };
+		var memberFilter = {};
 
 		var startDate = req.param('Start date');
 		if (startDate) {
 			var startDateFormat = moment(startDate).format("YYYY-MM-DD HH:mm:ss");
-			memberFilter.WPExpireDate['>='] = startDateFormat;
+			memberFilter.WPExpireDate = {
+				'!': null,
+				'>=': startDateFormat
+			};
+		}
+		else {
+			memberFilter.WPExpireDate = { '!': null };
 		}
 
 		var memberName = req.param('memberName');
 		if (memberName) {
-			memberFilter.and = [
-				memberFilter,
-				{
-					or: [
-						{ NameFirstThai: { contains: memberName } },
-						{ NameMiddleThai: { contains: memberName } },
-						{ NameLastThai: { contains: memberName } }
-					]
-				}
+			memberFilter.or = [
+				{ NameFirstThai: { contains: memberName } },
+				{ NameMiddleThai: { contains: memberName } },
+				{ NameLastThai: { contains: memberName } }
 			];
-		};
+		}
 
 		var persons = [];
 		var results = [];
@@ -314,7 +315,7 @@ module.exports = {
 		// what is the current language_code of the User
 		// var langCode = ADCore.user.current(req).getLanguageCode();
 		var langCode = 'th', // TODO
-			startDate = req.param('Start date') || new Date();
+			startDate = req.param('Start date');
 
 		var personFilter = { WPExpireDate: { '!': null } },
 			persons = [],
@@ -353,6 +354,7 @@ module.exports = {
 					if (activityIds && activityIds.length > 0) {
 						// Find activities
 						FCFActivity.find({ id: _.uniq(activityIds) })
+							.populate('team', { fields: ['IDProject', 'ProjectNameEng'] })
 							.populate('translations', { language_code: langCode })
 							.then(function (a) {
 								p = _.map(a, function (act, index) {
@@ -371,6 +373,7 @@ module.exports = {
 										'activity_name_govt': activityNameGovt,
 										'startDate': act.date_start,
 										'endDate': act.date_end,
+										'project_id': act.team ? act.team.IDProject : '',
 										'order': index + 1
 									}
 								});
@@ -385,6 +388,29 @@ module.exports = {
 					results = _.flatten(r);
 					next();
 				});
+			},
+
+			// Pull project names
+			function (next) {
+				var projectIds = _.uniq(results.map(function (r) {
+					return r.project_id;
+				}));
+
+				FCFProject.find({ IDProject: projectIds }, { fields: ['IDProject', 'ProjectNameEng'] })
+					.fail(next)
+					.done(function (projects) {
+
+						for (var i = 0; i < results.length; i++) {
+							if (results[i].project_id) {
+								var project = projects.filter(function (p) { return p.IDProject == results[i].project_id; })[0];
+								if (project) {
+									results[i].project_name = project.ProjectNameEng;
+								}
+							}
+						}
+
+						next();
+					});
 			}
 
 		], function (err, r) {
@@ -400,9 +426,9 @@ module.exports = {
 		});
 	},
 
-	// /fcf_activities/renderreport/acitivity_images
-	acitivity_images: function (req, res) {
-		AD.log('<green>::: renderreport.acitivity_images() :::</green>');
+	// /fcf_activities/renderreport/activity_images
+	activity_images: function (req, res) {
+		AD.log('<green>::: renderreport.activity_images() :::</green>');
 
 		// what is the current language_code of the User
 		// var langCode = ADCore.user.current(req).getLanguageCode();
@@ -482,20 +508,22 @@ module.exports = {
 
 				// Find activity name
 				FCFActivity.find({ id: _.uniq(activityIds) })
+					.populate('team', { fields: ['IDProject', 'ProjectNameEng'] })
 					.populate('translations', { language_code: langCode })
 					.then(function (activities) {
-						images.forEach(function (r) {
-							var act = _.find(activities, { 'id': r.activity_id });
+						images.forEach(function (img) {
+							var act = _.find(activities, { 'id': img.activity_id });
 							if (act) {
 								if (act.translations && act.translations[0]) {
-									r.activity_name = act.translations[0].activity_name;
-									r.activity_name_govt = act.translations[0].activity_name_govt;
-									r.activity_description = act.translations[0].activity_description;
-									r.activity_description_govt = act.translations[0].activity_description_govt;
+									img.activity_name = act.translations[0].activity_name;
+									img.activity_name_govt = act.translations[0].activity_name_govt;
+									img.activity_description = act.translations[0].activity_description;
+									img.activity_description_govt = act.translations[0].activity_description_govt;
 								}
 
-								r.activity_start_date = act.date_start;
-								r.acitivity_end_date = act.date_end;
+								img.activity_start_date = act.date_start;
+								img.acitivity_end_date = act.date_end;
+								img.project_id = act.team ? act.team.IDProject : '';
 							}
 						});
 
@@ -523,7 +551,8 @@ module.exports = {
 							'activity_end_date': img[i].acitivity_end_date,
 							'activity_image_file_name_left_column': img[i].activity_image_file_name,
 							'activity_image_caption_left_column': img[i].caption,
-							'activity_image_caption_govt_left_column': img[i].caption_govt
+							'activity_image_caption_govt_left_column': img[i].caption_govt,
+							'project_id': img[i].project_id
 						};
 
 						var right_column_img = img[i + 1];
@@ -541,7 +570,31 @@ module.exports = {
 				}
 
 				next();
+			},
+
+			// Pull project names
+			function (next) {
+				var projectIds = _.uniq(results.map(function (r) {
+					return r.project_id;
+				}));
+
+				FCFProject.find({ IDProject: projectIds }, { fields: ['IDProject', 'ProjectNameEng'] })
+					.fail(next)
+					.done(function (projects) {
+
+						for (var i = 0; i < results.length; i++) {
+							if (results[i].project_id) {
+								var project = projects.filter(function (p) { return p.IDProject == results[i].project_id; })[0];
+								if (project) {
+									results[i].project_name = project.ProjectNameEng;
+								}
+							}
+						}
+
+						next();
+					});
 			}
+
 		], function (err, r) {
 
 			if (err) {
@@ -549,7 +602,7 @@ module.exports = {
 				ADCore.comm.error(res, err, 500);
 			} else {
 
-				AD.log('<green>::: end renderreport.acitivity_images() :::</green>');
+				AD.log('<green>::: end renderreport.activity_images() :::</green>');
 				ADCore.comm.success(res, results);
 			}
 		});
@@ -599,6 +652,7 @@ module.exports = {
 							'person_id': p.IDPerson,
 							'activity_id': img.activity,
 							'date': img.date
+							// TODO: project_id ??
 						});
 					});
 				});

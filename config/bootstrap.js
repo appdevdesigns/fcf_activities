@@ -287,7 +287,6 @@ module.exports = function(cb) {
 						}
 					},
 					["fcf.activities"], "/fcf_activities/renderreport/activestaffs").then(function(result) {
-						// activeStaffDataSource = result instanceof Array ? result[0] : result;
 						next();
 					});
 			},
@@ -303,7 +302,9 @@ module.exports = function(cb) {
 								{ "name": "activity_name_govt", "type": "string" },
 								{ "name": "order", "type": "number" },
 								{ "name": "startDate", "type": "date", "dateFormat": "YYYY-MM-DDTHH:mm:ss.msZ" },
-								{ "name": "endDate", "type": "date", "dateFormat": "YYYY-MM-DDTHH:mm:ss.msZ" }
+								{ "name": "endDate", "type": "date", "dateFormat": "YYYY-MM-DDTHH:mm:ss.msZ" },
+								{ "name": "project_id", "type": "string" },
+								{ "name": "project_name", "type": "string" }
 							]
 						}
 					},
@@ -330,11 +331,13 @@ module.exports = function(cb) {
 								{ "name": "activity_image_file_name_left_column", "type": "string" },
 								{ "name": "activity_image_caption_govt_left_column", "type": "string" },
 								{ "name": "activity_image_file_name_right_column", "type": "string" },
-								{ "name": "activity_image_caption_govt_right_column", "type": "string" }
+								{ "name": "activity_image_caption_govt_right_column", "type": "string" },
+								{ "name": "project_id", "type": "string" },
+								{ "name": "project_name", "type": "string" }
 							]
 						}
 					},
-					["fcf.activities"], "/fcf_activities/renderreport/acitivity_images").then(function(result) {
+					["fcf.activities"], "/fcf_activities/renderreport/activity_images").then(function(result) {
 						activtyImageDataSource = result instanceof Array ? result[0] : result;
 						next();
 					});
@@ -354,7 +357,11 @@ module.exports = function(cb) {
 						"join": staffActivities
 					},
 					["fcf.activities"], "/fcf_activities/renderreport/staffs"
-				).then(function() { next(); });
+				).then(function(result) { 
+					staffAndActivitiesDataSource = result instanceof Array ? result[0] : result;
+
+					next(); 
+				});
 			},
 			function(next) {
 				var staffActivityImages = {
@@ -371,8 +378,13 @@ module.exports = function(cb) {
 						"join": staffActivityImages
 					},
 					["fcf.activities"], "/fcf_activities/renderreport/staffs"
-				).then(function() { next(); });
+				).then(function(result) {
+					staffAndImagesDataSource = result instanceof Array ? result[0] : result;
+
+					next();
+				});
 			},
+
 		]);
 
 	}
