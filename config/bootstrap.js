@@ -343,6 +343,28 @@ module.exports = function(cb) {
 					});
 			},
 			function(next) {
+				ProcessReport.addDataSource(
+					{
+						"name": "FCF Approved Images",
+						"schema": {
+							"fields": [
+								{ "name": "image_id", "type": "number" },
+								{ "name": "date", "type": "date" },
+								{ "name": "person_id", "type": "number" },
+								{ "name": "activity_id", "type": "number" },
+								{ "name": "activity_start_date", "type": "date", "dateFormat": "YYYY-MM-DDTHH:mm:ss.msZ" },
+								{ "name": "activity_end_date", "type": "date", "dateFormat": "YYYY-MM-DDTHH:mm:ss.msZ" },
+								{ "name": "project_id", "type": "string" },
+								{ "name": "project_name", "type": "string" }
+							]
+						}
+					},
+					["fcf.activities"], "/fcf_activities/renderreport/activity_images").then(function (result) {
+						activtyImageDataSource = result instanceof Array ? result[0] : result;
+						next();
+					});
+			},
+			function(next) {
 				var staffActivities = {
 					"type": "inner",
 					"leftKey": "person_id",

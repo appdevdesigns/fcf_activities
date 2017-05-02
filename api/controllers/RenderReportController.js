@@ -522,7 +522,7 @@ module.exports = {
 								}
 
 								img.activity_start_date = act.date_start;
-								img.acitivity_end_date = act.date_end;
+								img.activity_end_date = act.date_end;
 								img.project_id = act.team ? act.team.IDProject : '';
 							}
 						});
@@ -548,7 +548,7 @@ module.exports = {
 							'activity_description': img[i].activity_description,
 							'activity_description_govt': img[i].activity_description_govt,
 							'activity_start_date': img[i].activity_start_date,
-							'activity_end_date': img[i].acitivity_end_date,
+							'activity_end_date': img[i].activity_end_date,
 							'activity_image_file_name_left_column': img[i].activity_image_file_name,
 							'activity_image_caption_left_column': img[i].caption,
 							'activity_image_caption_govt_left_column': img[i].caption_govt,
@@ -644,7 +644,7 @@ module.exports = {
 
 			function (next) {
 
-				// Find image caption
+				// Find images
 				persons.forEach(function (p) {
 					p.taggedInImages.forEach(function (img) {
 						results.push({
@@ -652,12 +652,57 @@ module.exports = {
 							'person_id': p.IDPerson,
 							'activity_id': img.activity,
 							'date': img.date
-							// TODO: project_id ??
 						});
 					});
 				});
 
 				next();
+			},
+
+			// Pull activities
+			function (next) {
+				var activityIds = _.map(results, function (img) {
+					return img.activity_id;
+				});
+
+				// Find activity name
+				FCFActivity.find({ id: _.uniq(activityIds) })
+					.populate('team', { fields: ['IDProject', 'ProjectNameEng'] })
+					.then(function (activities) {
+						results.forEach(function (img) {
+							var act = _.find(activities, { 'id': img.activity_id });
+							if (act) {
+								img.activity_start_date = act.date_start;
+								img.activity_end_date = act.date_end;
+								img.project_id = act.team ? act.team.IDProject : '';
+							}
+						});
+
+						next();
+					});
+			},
+
+			// Pull project names
+			function (next) {
+				var projectIds = _.uniq(results.map(function (r) {
+					return r.project_id;
+				}));
+
+				FCFProject.find({ IDProject: projectIds }, { fields: ['IDProject', 'ProjectNameEng'] })
+					.fail(next)
+					.done(function (projects) {
+
+						for (var i = 0; i < results.length; i++) {
+							if (results[i].project_id) {
+								var project = projects.filter(function (p) { return p.IDProject == results[i].project_id; })[0];
+								if (project) {
+									results[i].project_name = project.ProjectNameEng;
+								}
+							}
+						}
+
+						next();
+					});
 			}
 
 		], function (err, r) {
