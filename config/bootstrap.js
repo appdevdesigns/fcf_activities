@@ -359,7 +359,7 @@ module.exports = function(cb) {
 							]
 						}
 					},
-					["fcf.activities"], "/fcf_activities/renderreport/activity_images").then(function (result) {
+					["fcf.activities"], "/fcf_activities/renderreport/approved_images").then(function (result) {
 						activtyImageDataSource = result instanceof Array ? result[0] : result;
 						next();
 					});
