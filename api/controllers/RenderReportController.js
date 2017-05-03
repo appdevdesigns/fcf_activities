@@ -475,6 +475,7 @@ module.exports = {
 
 						images.push({
 							'image_id': img.id,
+							'image_date': img.date,
 							'person_id': p.IDPerson,
 							'activity_id': img.activity,
 							'activity_image_file_name': imageFile
@@ -541,6 +542,7 @@ module.exports = {
 					for (var i = 0; i < img.length; i += 2) {
 
 						var result = {
+							'image_date': img[i].image_date,
 							'person_id': img[i].person_id,
 							'activity_id': img[i].activity_id,
 							'activity_name': img[i].activity_name,

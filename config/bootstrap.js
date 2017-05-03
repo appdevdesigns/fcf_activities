@@ -320,6 +320,7 @@ module.exports = function(cb) {
 						"name": "FCF Activity Images",
 						"schema": {
 							"fields": [
+								{ "name": "image_date", "type": "date", "dateFormat": "YYYY-MM-DDTHH:mm:ss.msZ" },
 								{ "name": "person_id", "type": "number" },
 								{ "name": "activity_id", "type": "number" },
 								{ "name": "activity_name", "type": "string" },
