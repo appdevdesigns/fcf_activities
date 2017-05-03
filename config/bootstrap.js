@@ -320,7 +320,6 @@ module.exports = function(cb) {
 						"name": "FCF Activity Images",
 						"schema": {
 							"fields": [
-								{ "name": "image_date", "type": "date", "dateFormat": "YYYY-MM-DDTHH:mm:ss.msZ" },
 								{ "name": "person_id", "type": "number" },
 								{ "name": "activity_id", "type": "number" },
 								{ "name": "activity_name", "type": "string" },
@@ -331,8 +330,10 @@ module.exports = function(cb) {
 								{ "name": "activity_end_date", "type": "date", "dateFormat": "YYYY-MM-DDTHH:mm:ss.msZ" },
 								{ "name": "activity_image_file_name_left_column", "type": "string" },
 								{ "name": "activity_image_caption_govt_left_column", "type": "string" },
+								{ "name": "activity_image_date_left_column", "type": "date", "dateFormat": "YYYY-MM-DDTHH:mm:ss.msZ" },
 								{ "name": "activity_image_file_name_right_column", "type": "string" },
 								{ "name": "activity_image_caption_govt_right_column", "type": "string" },
+								{ "name": "activity_image_date_right_column", "type": "date", "dateFormat": "YYYY-MM-DDTHH:mm:ss.msZ" },
 								{ "name": "project_id", "type": "string" },
 								{ "name": "project_name", "type": "string" }
 							]
@@ -350,7 +351,7 @@ module.exports = function(cb) {
 						"schema": {
 							"fields": [
 								{ "name": "image_id", "type": "number" },
-								{ "name": "date", "type": "date" },
+								{ "name": "image_date", "type": "date" },
 								{ "name": "person_id", "type": "number" },
 								{ "name": "activity_id", "type": "number" },
 								{ "name": "activity_start_date", "type": "date", "dateFormat": "YYYY-MM-DDTHH:mm:ss.msZ" },
@@ -361,7 +362,6 @@ module.exports = function(cb) {
 						}
 					},
 					["fcf.activities"], "/fcf_activities/renderreport/approved_images").then(function (result) {
-						activtyImageDataSource = result instanceof Array ? result[0] : result;
 						next();
 					});
 			},

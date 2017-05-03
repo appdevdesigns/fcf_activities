@@ -542,7 +542,6 @@ module.exports = {
 					for (var i = 0; i < img.length; i += 2) {
 
 						var result = {
-							'image_date': img[i].image_date,
 							'person_id': img[i].person_id,
 							'activity_id': img[i].activity_id,
 							'activity_name': img[i].activity_name,
@@ -554,6 +553,7 @@ module.exports = {
 							'activity_image_file_name_left_column': img[i].activity_image_file_name,
 							'activity_image_caption_left_column': img[i].caption,
 							'activity_image_caption_govt_left_column': img[i].caption_govt,
+							'activity_image_date_left_column': img[i].image_date,
 							'project_id': img[i].project_id
 						};
 
@@ -562,6 +562,7 @@ module.exports = {
 							result.activity_image_file_name_right_column = right_column_img.activity_image_file_name;
 							result.activity_image_caption_right_column = right_column_img.caption;
 							result.activity_image_caption_govt_right_column = right_column_img.caption_govt;
+							result.activity_image_date_right_column = right_column_img.image_date;
 						}
 						else {
 							result.activity_image_file_name_right_column = 'blank.jpg';
@@ -653,7 +654,7 @@ module.exports = {
 							'image_id': img.id,
 							'person_id': p.IDPerson,
 							'activity_id': img.activity,
-							'date': img.date
+							'image_date': img.date
 						});
 					});
 				});
