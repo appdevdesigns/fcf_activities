@@ -437,7 +437,6 @@ module.exports = {
 
 		var personFilter = { WPExpireDate: { '!': null } },
 			persons = [],
-			images = [],
 			results = [];
 
 		if (startDate) {
@@ -473,28 +472,28 @@ module.exports = {
 						if (imageFile.indexOf('_scaled.') > -1)
 							imageFile = imageFile.replace('_scaled.', '_print.');
 
-						images.push({
+						results.push({
 							'image_id': img.id,
+							'image_file_name': imageFile,
 							'image_date': img.date,
 							'person_id': p.IDPerson,
 							'activity_id': img.activity,
-							'activity_image_file_name': imageFile
 						});
 					});
 				});
 
-				var imageIds = _.map(images, function (r) {
+				var imageIds = _.map(results, function (r) {
 					return r.image_id;
 				});
 
 				FCFActivityImages.find({ id: _.uniq(imageIds) })
 					.populate('translations', { language_code: langCode })
-					.then(function (resultImages) {
-						resultImages.forEach(function (img) {
-							images.forEach(function (image) {
+					.then(function (images) {
+						images.forEach(function (img) {
+							results.forEach(function (image) {
 								if (image.image_id == img.id) {
-									image.caption = img.translations[0] ? img.translations[0].caption : '';
-									image.caption_govt = img.translations[0] ? img.translations[0].caption_govt : '';
+									image['image_caption'] = img.translations[0] ? img.translations[0].caption : '';
+									image['image_caption_govt'] = img.translations[0] ? img.translations[0].caption_govt : '';
 								}
 							});
 						});
@@ -503,7 +502,7 @@ module.exports = {
 					});
 			},
 			function (next) {
-				var activityIds = _.map(images, function (r) {
+				var activityIds = _.map(results, function (r) {
 					return r.activity_id;
 				});
 
@@ -512,67 +511,24 @@ module.exports = {
 					.populate('team', { fields: ['IDProject', 'ProjectNameEng'] })
 					.populate('translations', { language_code: langCode })
 					.then(function (activities) {
-						images.forEach(function (img) {
+						results.forEach(function (img) {
 							var act = _.find(activities, { 'id': img.activity_id });
 							if (act) {
 								if (act.translations && act.translations[0]) {
-									img.activity_name = act.translations[0].activity_name;
-									img.activity_name_govt = act.translations[0].activity_name_govt;
-									img.activity_description = act.translations[0].activity_description;
-									img.activity_description_govt = act.translations[0].activity_description_govt;
+									img['activity_name'] = act.translations[0].activity_name;
+									img['activity_name_govt'] = act.translations[0].activity_name_govt;
+									img['activity_description'] = act.translations[0].activity_description;
+									img['activity_description_govt'] = act.translations[0].activity_description_govt;
 								}
 
-								img.activity_start_date = act.date_start;
-								img.activity_end_date = act.date_end;
-								img.project_id = act.team ? act.team.IDProject : '';
+								img['activity_start_date'] = act.date_start;
+								img['activity_end_date'] = act.date_end;
+								img['project_id'] = act.team ? act.team.IDProject : '';
 							}
 						});
 
 						next();
 					});
-			},
-
-			function (next) {
-				var groupedImages = _.groupBy(_.uniq(images), function (img) {
-					return img.activity_id + '&' + img.person_id;
-				});
-
-				for (var actId in groupedImages) {
-					var img = groupedImages[actId];
-					for (var i = 0; i < img.length; i += 2) {
-
-						var result = {
-							'person_id': img[i].person_id,
-							'activity_id': img[i].activity_id,
-							'activity_name': img[i].activity_name,
-							'activity_name_govt': img[i].activity_name_govt,
-							'activity_description': img[i].activity_description,
-							'activity_description_govt': img[i].activity_description_govt,
-							'activity_start_date': img[i].activity_start_date,
-							'activity_end_date': img[i].activity_end_date,
-							'activity_image_file_name_left_column': img[i].activity_image_file_name,
-							'activity_image_caption_left_column': img[i].caption,
-							'activity_image_caption_govt_left_column': img[i].caption_govt,
-							'activity_image_date_left_column': img[i].image_date,
-							'project_id': img[i].project_id
-						};
-
-						var right_column_img = img[i + 1];
-						if (right_column_img) {
-							result.activity_image_file_name_right_column = right_column_img.activity_image_file_name;
-							result.activity_image_caption_right_column = right_column_img.caption;
-							result.activity_image_caption_govt_right_column = right_column_img.caption_govt;
-							result.activity_image_date_right_column = right_column_img.image_date;
-						}
-						else {
-							result.activity_image_file_name_right_column = 'blank.jpg';
-						}
-
-						results.push(result);
-					}
-				}
-
-				next();
 			},
 
 			// Pull project names
@@ -589,7 +545,7 @@ module.exports = {
 							if (results[i].project_id) {
 								var project = projects.filter(function (p) { return p.IDProject == results[i].project_id; })[0];
 								if (project) {
-									results[i].project_name = project.ProjectNameEng;
+									results[i]['project_name'] = project.ProjectNameEng;
 								}
 							}
 						}
