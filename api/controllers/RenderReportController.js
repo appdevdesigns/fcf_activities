@@ -486,7 +486,7 @@ module.exports = {
 					return r.image_id;
 				});
 
-				FCFActivityImages.find({ id: _.uniq(imageIds) })
+				FCFActivityImages.find({ id: _.uniq(imageIds), status: ['approved', 'ready'] })
 					.populate('translations', { language_code: langCode })
 					.then(function (images) {
 						images.forEach(function (img) {
