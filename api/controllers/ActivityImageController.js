@@ -1475,6 +1475,12 @@ AD.log.error('!!!! error:', err);
         } else {
 // AD.log('....  publishing Request Data:', requestData);
 
+
+// 12 May 2017:  Fix for bloated image approval requests.
+// reduce the data only to what is needed by the templates:
+requestData = cleanData(requestData);
+        
+
             ADCore.queue.publish('opsportal.approval.create', requestData);
         }
 
@@ -1483,5 +1489,106 @@ AD.log.error('!!!! error:', err);
 
 
 
+}
+
+
+
+function cleanData(objectData) {
+
+
+    objectData = lodash.cloneDeep(objectData);
+
+    function reduceObject(obj, fieldsToKeep) {
+        for(var k in obj) {
+            if (fieldsToKeep.indexOf(k) == -1) {
+                delete obj[k];
+            }
+        }
+    }
+
+
+    function reduceActivity(activity) {
+        
+        // console.log('    ... cleaning activity:'+ activity.activity_name );
+        var fieldsToKeep = [ 'activity_name', 'activity_description'];
+        reduceObject(activity, fieldsToKeep);
+    }
+
+
+
+    function reducePerson(person) {
+        
+        // console.log('    ... cleaning person:'+ person.display_name );
+        var fieldsToKeep = [ 'IDPerson', 'avatar', 'display_name' ];
+        reduceObject(person, fieldsToKeep);
+    }
+
+
+
+    function reduceTeam(team) {
+        
+        // console.log('    ... cleaning team:'+ team.MinistryDisplayName );
+        var fieldsToKeep = [ 'MinistryDisplayName' ];
+        reduceObject(team, fieldsToKeep);
+    }
+
+
+    ////
+    //// Form Data cleanup
+    ////
+
+    // clean up form.viewData
+    if (objectData.form 
+        && objectData.form.viewData) {
+
+
+        // clean up form.viewData.taggedPeople
+        if (objectData.form.viewData.taggedPeople) {
+            
+            objectData.form.viewData.taggedPeople.forEach(function(person){
+                reducePerson(person);
+            })
+        }
+        
+    }
+
+    ////
+    //// Related Data cleanup
+    ////
+
+    if (objectData.relatedInfo
+        && objectData.relatedInfo.viewData) {
+
+
+        // clean up relatedInfo.viewData.untaggedPeople
+        if (objectData.relatedInfo.viewData.activity) {
+
+            reduceActivity(objectData.relatedInfo.viewData.activity);
+            
+        }
+
+
+        // clean up relatedInfo.viewData.untaggedPeople
+        if (objectData.relatedInfo.viewData.untaggedPeople) {
+
+            objectData.relatedInfo.viewData.untaggedPeople.forEach(function(person){
+                reducePerson(person);
+            })
+        }
+
+        // clean up relatedInfo.viewData.user.teams
+        if (objectData.relatedInfo.viewData.user
+            && objectData.relatedInfo.viewData.user.teams) {
+
+            objectData.relatedInfo.viewData.user.teams.forEach(function(team){
+                reduceTeam(team);
+            })
+        }
+
+    }
+
+
+    objectData = lodash.cloneDeep(objectData);
+    return objectData;
 }
 
