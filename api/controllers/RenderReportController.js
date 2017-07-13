@@ -9,6 +9,7 @@
 var AD = require('ad-utils');
 var _ = require('lodash');
 var async = require('async');
+var moment = require('moment');
 
 function getAge(birthDate) {
     var today = new Date();
@@ -30,11 +31,11 @@ function populateStaffInfo(persons) {
 		return dfd;
 	}
 
-	var personIds = _.map(persons, function(p) { return p.IDPerson; });
+	var personIds = _.map(persons, function (p) { return p.IDPerson; });
 
 	async.waterfall([
 		// Get address info
-		function(next) {
+		function (next) {
 			FCFAddress.find({ IDPerson: personIds })
 				.populate('IDTambon')
 				.populate('IDAmphur')
@@ -44,8 +45,8 @@ function populateStaffInfo(persons) {
 					next(null, addrInfo);
 				});
 		},
-		function(addresses, next) {
-			persons.forEach(function(p) {
+		function (addresses, next) {
+			persons.forEach(function (p) {
 				var reportData = {};
 
 				reportData.person_id = p.IDPerson;
@@ -64,11 +65,13 @@ function populateStaffInfo(persons) {
 				reportData.person_work_number = p.WPNumber ? p.WPNumber : 'N/A (Work Number)';
 				reportData.person_work_address = p.WorkAddress ? p.WorkAddress : 'N/A (Work address)';
 
-				reportData.person_visa_start_date = p.VisaDateIssuedMostRecent ? p.VisaDateIssuedMostRecent :'N/A (Visa date issue)';
+				reportData.person_visa_start_date = p.VisaDateIssuedMostRecent ? p.VisaDateIssuedMostRecent : 'N/A (Visa date issue)';
 				reportData.person_visa_expire_date = p.VisaDateExpire ? p.VisaDateExpire : 'N/A (Visa expire date)';
 
 				reportData.person_job_title = p.JobTitle ? p.JobTitle : 'N/A (Job title)';
 				reportData.person_job_description = p.JobDescSimple ? p.JobDescSimple : 'N/A (Job description)';
+
+				reportData.person_work_permit_expire_date = p.WPExpireDate;
 
 				reportData.project_title = p.Project;
 
@@ -90,14 +93,14 @@ function populateStaffInfo(persons) {
 
 				reportData.number_of_approved_images = (p.taggedInImages && p.taggedInImages.length ? p.taggedInImages.length : 0);
 				if (reportData.number_of_approved_images > 0) {
-					var activityIds = _.map(p.taggedInImages, function(img) { return img.activity; });
+					var activityIds = _.map(p.taggedInImages, function (img) { return img.activity; });
 					reportData.number_of_approved_activities = _.uniq(activityIds).length;
 				}
 				else
 					reportData.number_of_approved_activities = 0;
 
 				if (p.address) {
-					var address = addresses.filter(function(addr) {
+					var address = addresses.filter(function (addr) {
 						return addr.IDPerson == p.IDPerson;
 					});
 
@@ -127,7 +130,7 @@ function populateStaffInfo(persons) {
 
 			next();
 		}
-	], function(err) {
+	], function (err) {
 		if (err)
 			dfd.reject(err);
 		else
@@ -140,41 +143,49 @@ function populateStaffInfo(persons) {
 module.exports = {
 
 	// /fcf_activities/renderreport/staffs
-	staffs: function(req, res) {
+	staffs: function (req, res) {
 		AD.log('<green>::: renderreport.staffs() :::</green>');
 
 		// Set member name filter
-		var memberNameFilter = { codeWorkFlowPhase: 'OG' };
+		var memberFilter = {};
+
+		var startDate = req.param('Start date');
+		if (startDate) {
+			var startDateFormat = moment(startDate).format("YYYY-MM-DD HH:mm:ss");
+			memberFilter.WPExpireDate = {
+				'!': null,
+				'>=': startDateFormat
+			};
+		}
+		else {
+			memberFilter.WPExpireDate = { '!': null };
+		}
+
 		var memberName = req.param('memberName');
 		if (memberName) {
-			memberNameFilter.and = [
-				memberNameFilter,
-				{
-					or: [
-						{ NameFirstThai: { contains: memberName } },
-						{ NameMiddleThai: { contains: memberName } },
-						{ NameLastThai: { contains: memberName } }
-					]
-				}
+			memberFilter.or = [
+				{ NameFirstThai: { contains: memberName } },
+				{ NameMiddleThai: { contains: memberName } },
+				{ NameLastThai: { contains: memberName } }
 			];
-		};
+		}
 
 		var persons = [];
 		var results = [];
 
 		async.series([
 
-			function(next) {
+			function (next) {
 
 				// Find person object
-				FCFPerson.find(memberNameFilter)
+				FCFPerson.find(memberFilter)
 					.populate('taggedInImages', { status: ['approved', 'ready'] })
 					.populate('codeNationality')
-					.fail(function(err) {
+					.fail(function (err) {
 						AD.log(err);
 						next(err);
 					})
-					.then(function(p) {
+					.then(function (p) {
 						if (p.length < 1)
 							next('Could not found any person.');
 
@@ -183,14 +194,14 @@ module.exports = {
 					});
 			},
 
-			function(next) {
+			function (next) {
 				populateStaffInfo(persons).fail(next)
 					.then(function (personInfos) {
 						results = personInfos;
 						next();
 					});
 			}
-		], function(err, r) {
+		], function (err, r) {
 
 			if (err) {
 
@@ -204,7 +215,7 @@ module.exports = {
 	},
 
 	// /fcf_activities/renderreport/activestaffs
-	activestaffs: function(req, res) {
+	activestaffs: function (req, res) {
 		AD.log('<green>::: renderreport.activestaffs() :::</green>');
 
 		var userGuids = [],
@@ -214,32 +225,39 @@ module.exports = {
 
 		async.series([
 
-			function(next) {
+			function (next) {
 				// Get guid of active users
 				SiteUser.find({ isActive: 1 }, { select: ['guid'] })
-					.then(function(result) {
-						userGuids = _.map(result, function(r) { return r.guid; });
+					.then(function (result) {
+						userGuids = _.map(result, function (r) { return r.guid; });
 
 						next();
 					});
 			},
 
-			function(next) {
+			function (next) {
 				// Get id of staffs
 				GUID2Person.find({ guid: userGuids }, { select: ['person'] })
-					.then(function(result) {
-						staffIds = _.map(result, function(r) { return r.person; });
+					.then(function (result) {
+						staffIds = _.map(result, function (r) { return r.person; });
 
 						next();
 					});
 			},
 
-			function(next) {
+			function (next) {
 				// Set member name filter
 				var memberFilter = {
-					codeWorkFlowPhase: 'OG',
+					WPExpireDate: { '!': null },
 					IDPerson: staffIds
 				};
+
+				var startDate = req.param('Start date');
+				if (startDate) {
+					var startDateFormat = moment(startDate).format("YYYY-MM-DD HH:mm:ss");
+					memberFilter.WPExpireDate['>='] = startDateFormat;
+				}
+
 				var memberName = req.param('memberName');
 				if (memberName) {
 					memberFilter.and = [
@@ -257,11 +275,11 @@ module.exports = {
 				// Find person object
 				FCFPerson.find(memberFilter)
 					.populate('codeNationality')
-					.fail(function(err) {
+					.fail(function (err) {
 						AD.log(err);
 						next(err);
 					})
-					.then(function(p) {
+					.then(function (p) {
 						if (!p || p.length < 1)
 							next('Could not found any person.');
 
@@ -270,14 +288,14 @@ module.exports = {
 					});
 			},
 
-			function(next) {
+			function (next) {
 				populateStaffInfo(persons).fail(next)
-					.then(function(personInfos) {
+					.then(function (personInfos) {
 						results = personInfos;
 						next();
 					});
 			}
-		], function(err, r) {
+		], function (err, r) {
 
 			if (err) {
 
@@ -291,28 +309,34 @@ module.exports = {
 	},
 
 	// /fcf_activities/renderreport/activities
-	activities: function(req, res) {
+	activities: function (req, res) {
 		AD.log('<green>::: renderreport.activities() :::</green>');
 
 		// what is the current language_code of the User
 		// var langCode = ADCore.user.current(req).getLanguageCode();
-		var langCode = 'th'; // TODO
+		var langCode = 'th', // TODO
+			startDate = req.param('Start date');
 
-		var personFilter = { codeWorkFlowPhase: 'OG' },
+		var personFilter = { WPExpireDate: { '!': null } },
 			persons = [],
 			results = [];
 
+		if (startDate) {
+			var startDateFormat = moment(startDate).format("YYYY-MM-DD HH:mm:ss");
+			personFilter.WPExpireDate['>='] = startDateFormat;
+		}
+
 		async.series([
-			function(next) {
+			function (next) {
 
 				// Find person object
 				FCFPerson.find(personFilter, { fields: ['IDPerson'] })
 					.populate('taggedInImages', { status: ['approved', 'ready'] })
-					.fail(function(err) {
+					.fail(function (err) {
 						AD.log(err);
 						next(err);
 					})
-					.then(function(p) {
+					.then(function (p) {
 						if (p.length < 1)
 							next('Could not found any person.');
 
@@ -320,26 +344,36 @@ module.exports = {
 						next();
 					});
 			},
-			function(next) {
+			function (next) {
 
-				async.map(persons, function(p, callback) {
-					var activityIds = _.map(p.taggedInImages, function(img) {
+				async.map(persons, function (p, callback) {
+					var activityIds = _.map(p.taggedInImages, function (img) {
 						return img.activity;
 					});
 
 					if (activityIds && activityIds.length > 0) {
 						// Find activities
 						FCFActivity.find({ id: _.uniq(activityIds) })
+							.populate('team', { fields: ['IDProject', 'ProjectNameEng'] })
 							.populate('translations', { language_code: langCode })
-							.then(function(a) {
-								p = _.map(a, function(act, index) {
+							.then(function (a) {
+								p = _.map(a, function (act, index) {
+									var activityName = '',
+										activityNameGovt = '';
+
+									if (act.translations[0]) {
+										activityName = act.translations[0].activity_name;
+										activityNameGovt = act.translations[0].activity_name_govt;
+									}
+
 									return {
 										'person_id': p.IDPerson,
 										'activity_id': act.id,
-										'activity_name': act.translations[0].activity_name,
-										'activity_name_govt': act.translations[0].activity_name_govt,
+										'activity_name': activityName,
+										'activity_name_govt': activityNameGovt,
 										'startDate': act.date_start,
 										'endDate': act.date_end,
+										'project_id': act.team ? act.team.IDProject : '',
 										'order': index + 1
 									}
 								});
@@ -349,14 +383,37 @@ module.exports = {
 					else {
 						callback(null, null);
 					}
-				}, function(err, r) {
-					_.remove(r, function(t) { return !t; });
+				}, function (err, r) {
+					r = r.filter(function (t) { return t != null; });
 					results = _.flatten(r);
 					next();
 				});
+			},
+
+			// Pull project names
+			function (next) {
+				var projectIds = _.uniq(results.map(function (r) {
+					return r.project_id;
+				}));
+
+				FCFProject.find({ IDProject: projectIds }, { fields: ['IDProject', 'ProjectNameEng'] })
+					.fail(next)
+					.done(function (projects) {
+
+						for (var i = 0; i < results.length; i++) {
+							if (results[i].project_id) {
+								var project = projects.filter(function (p) { return p.IDProject == results[i].project_id; })[0];
+								if (project) {
+									results[i].project_name = project.ProjectNameEng;
+								}
+							}
+						}
+
+						next();
+					});
 			}
 
-		], function(err, r) {
+		], function (err, r) {
 
 			if (err) {
 
@@ -369,30 +426,35 @@ module.exports = {
 		});
 	},
 
-	// /fcf_activities/renderreport/acitivity_images
-	acitivity_images: function(req, res) {
-		AD.log('<green>::: renderreport.acitivity_images() :::</green>');
+	// /fcf_activities/renderreport/activity_images
+	activity_images: function (req, res) {
+		AD.log('<green>::: renderreport.activity_images() :::</green>');
 
 		// what is the current language_code of the User
 		// var langCode = ADCore.user.current(req).getLanguageCode();
-		var langCode = 'th'; // TODO
+		var langCode = 'th',// TODO
+			startDate = req.param('Start date');
 
-		var personFilter = { codeWorkFlowPhase: 'OG' },
+		var personFilter = { WPExpireDate: { '!': null } },
 			persons = [],
-			images = [],
 			results = [];
 
+		if (startDate) {
+			var startDateFormat = moment(startDate).format("YYYY-MM-DD HH:mm:ss");
+			personFilter.WPExpireDate['>='] = startDateFormat;
+		}
+
 		async.series([
-			function(next) {
+			function (next) {
 
 				// Find person object
 				FCFPerson.find(personFilter, { fields: ['IDPerson'] })
 					.populate('taggedInImages', { status: ['approved', 'ready'] })
-					.fail(function(err) {
+					.fail(function (err) {
 						AD.log(err);
 						next(err);
 					})
-					.then(function(p) {
+					.then(function (p) {
 						if (p.length < 1)
 							next('Could not found any person.');
 
@@ -401,36 +463,37 @@ module.exports = {
 						next();
 					});
 			},
-			function(next) {
+			function (next) {
 				// Find image caption
-				persons.forEach(function(p) {
-					p.taggedInImages.forEach(function(img) {
+				persons.forEach(function (p) {
+					p.taggedInImages.forEach(function (img) {
 						var imageFile = img.image;
 
 						if (imageFile.indexOf('_scaled.') > -1)
 							imageFile = imageFile.replace('_scaled.', '_print.');
 
-						images.push({
+						results.push({
 							'image_id': img.id,
+							'image_file_name': imageFile,
+							'image_date': img.date,
 							'person_id': p.IDPerson,
 							'activity_id': img.activity,
-							'activity_image_file_name': imageFile
 						});
 					});
 				});
 
-				var imageIds = _.map(images, function(r) {
+				var imageIds = _.map(results, function (r) {
 					return r.image_id;
 				});
 
-				FCFActivityImages.find({ id: _.uniq(imageIds) })
+				FCFActivityImages.find({ id: _.uniq(imageIds), status: ['approved', 'ready'] })
 					.populate('translations', { language_code: langCode })
-					.then(function(resultImages) {
-						resultImages.forEach(function(img) {
-							images.forEach(function(image) {
+					.then(function (images) {
+						images.forEach(function (img) {
+							results.forEach(function (image) {
 								if (image.image_id == img.id) {
-									image.caption = img.translations[0] ? img.translations[0].caption : '';
-									image.caption_govt = img.translations[0] ? img.translations[0].caption_govt : '';
+									image['image_caption'] = img.translations[0] ? img.translations[0].caption : '';
+									image['image_caption_govt'] = img.translations[0] ? img.translations[0].caption_govt : '';
 								}
 							});
 						});
@@ -438,99 +501,97 @@ module.exports = {
 						next();
 					});
 			},
-			function(next) {
-				var activityIds = _.map(images, function(r) {
+			function (next) {
+				var activityIds = _.map(results, function (r) {
 					return r.activity_id;
 				});
 
 				// Find activity name
 				FCFActivity.find({ id: _.uniq(activityIds) })
+					.populate('team', { fields: ['IDProject', 'ProjectNameEng'] })
 					.populate('translations', { language_code: langCode })
-					.then(function(activities) {
-						images.forEach(function(r) {
-							var act = _.find(activities, { 'id': r.activity_id });
-							if (act && act.translations && act.translations[0]) {
-								r.activity_name = act.translations[0].activity_name;
-								r.activity_name_govt = act.translations[0].activity_name_govt;
-								r.activity_description = act.translations[0].activity_description;
-								r.activity_description_govt = act.translations[0].activity_description_govt;
+					.then(function (activities) {
+						results.forEach(function (img) {
+							var act = _.find(activities, { 'id': img.activity_id });
+							if (act) {
+								if (act.translations && act.translations[0]) {
+									img['activity_name'] = act.translations[0].activity_name;
+									img['activity_name_govt'] = act.translations[0].activity_name_govt;
+									img['activity_description'] = act.translations[0].activity_description;
+									img['activity_description_govt'] = act.translations[0].activity_description_govt;
+								}
+
+								img['activity_start_date'] = act.date_start;
+								img['activity_end_date'] = act.date_end;
+								img['project_id'] = act.team ? act.team.IDProject : '';
 							}
-							r.activity_start_date = act.date_start;
-							r.acitivity_end_date = act.date_end;
 						});
 
 						next();
 					});
 			},
 
-			function(next) {
-				var groupedImages = _.groupBy(_.uniq(images), function(img) {
-					return img.activity_id + '&' + img.person_id;
-				});
+			// Pull project names
+			function (next) {
+				var projectIds = _.uniq(results.map(function (r) {
+					return r.project_id;
+				}));
 
-				for (var actId in groupedImages) {
-					var img = groupedImages[actId];
-					for (var i = 0; i < img.length; i += 2) {
+				FCFProject.find({ IDProject: projectIds }, { fields: ['IDProject', 'ProjectNameEng'] })
+					.fail(next)
+					.done(function (projects) {
 
-						var result = {
-							'person_id': img[i].person_id,
-							'activity_id': img[i].activity_id,
-							'activity_name': img[i].activity_name,
-							'activity_name_govt': img[i].activity_name_govt,
-							'activity_description': img[i].activity_description,
-							'activity_description_govt': img[i].activity_description_govt,
-							'activity_start_date': img[i].activity_start_date,
-							'activity_end_date': img[i].acitivity_end_date,
-							'activity_image_file_name_left_column': img[i].activity_image_file_name,
-							'activity_image_caption_left_column': img[i].caption,
-							'activity_image_caption_govt_left_column': img[i].caption_govt
-						};
-
-						var right_column_img = img[i + 1];
-						if (right_column_img) {
-							result.activity_image_file_name_right_column = right_column_img.activity_image_file_name;
-							result.activity_image_caption_right_column = right_column_img.caption;
-							result.activity_image_caption_govt_right_column = right_column_img.caption_govt;
-						}
-						else {
-							result.activity_image_file_name_right_column = 'blank.jpg';
+						for (var i = 0; i < results.length; i++) {
+							if (results[i].project_id) {
+								var project = projects.filter(function (p) { return p.IDProject == results[i].project_id; })[0];
+								if (project) {
+									results[i]['project_name'] = project.ProjectNameEng;
+								}
+							}
 						}
 
-						results.push(result);
-					}
-				}
-
-				next();
+						next();
+					});
 			}
-		], function(err, r) {
+
+		], function (err, r) {
 
 			if (err) {
 
 				ADCore.comm.error(res, err, 500);
 			} else {
 
-				AD.log('<green>::: end renderreport.acitivity_images() :::</green>');
+				AD.log('<green>::: end renderreport.activity_images() :::</green>');
 				ADCore.comm.success(res, results);
 			}
 		});
 	},
 
 	// /fcf_activities/renderreport/approved_images
-	approved_images: function(req, res) {
+	approved_images: function (req, res) {
 		var results = [],
 			persons = [];
 
 		async.series([
 
 			function (next) {
+				var memberFilter = { WPExpireDate: { '!': null } };
+
+				var startDate = req.param('Start date');
+				if (startDate) {
+					var startDateFormat = moment(startDate).format("YYYY-MM-DD HH:mm:ss");
+					memberFilter.WPExpireDate['>='] = startDateFormat;
+				}
+
+
 				// Find person object
-				FCFPerson.find({ codeWorkFlowPhase: 'OG' }, { fields: ['IDPerson'] })
+				FCFPerson.find(memberFilter, { fields: ['IDPerson'] })
 					.populate('taggedInImages', { status: ['approved', 'ready'] })
-					.fail(function(err) {
+					.fail(function (err) {
 						AD.log(err);
 						next(err);
 					})
-					.then(function(p) {
+					.then(function (p) {
 						if (p.length < 1)
 							next('Could not found any person.');
 
@@ -542,19 +603,65 @@ module.exports = {
 
 			function (next) {
 
-				// Find image caption
+				// Find images
 				persons.forEach(function (p) {
 					p.taggedInImages.forEach(function (img) {
 						results.push({
 							'image_id': img.id,
 							'person_id': p.IDPerson,
 							'activity_id': img.activity,
-							'date': img.date
+							'image_date': img.date
 						});
 					});
 				});
 
 				next();
+			},
+
+			// Pull activities
+			function (next) {
+				var activityIds = _.map(results, function (img) {
+					return img.activity_id;
+				});
+
+				// Find activity name
+				FCFActivity.find({ id: _.uniq(activityIds) })
+					.populate('team', { fields: ['IDProject', 'ProjectNameEng'] })
+					.then(function (activities) {
+						results.forEach(function (img) {
+							var act = _.find(activities, { 'id': img.activity_id });
+							if (act) {
+								img.activity_start_date = act.date_start;
+								img.activity_end_date = act.date_end;
+								img.project_id = act.team ? act.team.IDProject : '';
+							}
+						});
+
+						next();
+					});
+			},
+
+			// Pull project names
+			function (next) {
+				var projectIds = _.uniq(results.map(function (r) {
+					return r.project_id;
+				}));
+
+				FCFProject.find({ IDProject: projectIds }, { fields: ['IDProject', 'ProjectNameEng'] })
+					.fail(next)
+					.done(function (projects) {
+
+						for (var i = 0; i < results.length; i++) {
+							if (results[i].project_id) {
+								var project = projects.filter(function (p) { return p.IDProject == results[i].project_id; })[0];
+								if (project) {
+									results[i].project_name = project.ProjectNameEng;
+								}
+							}
+						}
+
+						next();
+					});
 			}
 
 		], function (err, r) {

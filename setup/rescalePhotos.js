@@ -56,13 +56,13 @@ var renders = [
     },
 
     // Print Versions
-    // 3.5" x 5" @ 300dpi:
-    // 1500x1050
+    // 2.45" x 3.5" @ 300dpi:
+    // 1050x735
     {
         name: '_print',
         quality:60,
-        width: 1500,
-        height: 1050,
+        width: 1050,
+        height: 735,
         'default':false
     }
 ]

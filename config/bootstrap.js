@@ -235,6 +235,7 @@ module.exports = function(cb) {
 								{ "name": "person_home_address", "type": "string" },
 								{ "name": "person_visa_start_date", "type": "date" },
 								{ "name": "person_visa_expire_date", "type": "date" },
+								{ "name": "person_work_permit_expire_date","type": "date" },
 								{ "name": "person_job_title", "type": "string" },
 								{ "name": "person_job_description", "type": "string" },
 								{ "name": "person_activites", "type": "string" },
@@ -271,6 +272,7 @@ module.exports = function(cb) {
 								{ "name": "person_home_address", "type": "string" },
 								{ "name": "person_visa_start_date", "type": "date" },
 								{ "name": "person_visa_expire_date", "type": "date" },
+								{ "name": "person_work_permit_expire_date","type": "date" },
 								{ "name": "person_job_title", "type": "string" },
 								{ "name": "person_job_description", "type": "string" },
 								{ "name": "person_activites", "type": "string" },
@@ -285,7 +287,6 @@ module.exports = function(cb) {
 						}
 					},
 					["fcf.activities"], "/fcf_activities/renderreport/activestaffs").then(function(result) {
-						// activeStaffDataSource = result instanceof Array ? result[0] : result;
 						next();
 					});
 			},
@@ -301,7 +302,9 @@ module.exports = function(cb) {
 								{ "name": "activity_name_govt", "type": "string" },
 								{ "name": "order", "type": "number" },
 								{ "name": "startDate", "type": "date", "dateFormat": "YYYY-MM-DDTHH:mm:ss.msZ" },
-								{ "name": "endDate", "type": "date", "dateFormat": "YYYY-MM-DDTHH:mm:ss.msZ" }
+								{ "name": "endDate", "type": "date", "dateFormat": "YYYY-MM-DDTHH:mm:ss.msZ" },
+								{ "name": "project_id", "type": "string" },
+								{ "name": "project_name", "type": "string" }
 							]
 						}
 					},
@@ -317,6 +320,11 @@ module.exports = function(cb) {
 						"name": "FCF Activity Images",
 						"schema": {
 							"fields": [
+								{ "name": "image_id", "type": "number" },
+								{ "name": "image_file_name", "type": "string" },
+								{ "name": "image_caption_govt", "type": "string" },
+								{ "name": "image_caption", "type": "string" },
+								{ "name": "image_date", "type": "date", "dateFormat": "YYYY-MM-DDTHH:mm:ss.msZ" },
 								{ "name": "person_id", "type": "number" },
 								{ "name": "activity_id", "type": "number" },
 								{ "name": "activity_name", "type": "string" },
@@ -325,15 +333,34 @@ module.exports = function(cb) {
 								{ "name": "activity_description_govt", "type": "string" },
 								{ "name": "activity_start_date", "type": "date", "dateFormat": "YYYY-MM-DDTHH:mm:ss.msZ" },
 								{ "name": "activity_end_date", "type": "date", "dateFormat": "YYYY-MM-DDTHH:mm:ss.msZ" },
-								{ "name": "activity_image_file_name_left_column", "type": "string" },
-								{ "name": "activity_image_caption_govt_left_column", "type": "string" },
-								{ "name": "activity_image_file_name_right_column", "type": "string" },
-								{ "name": "activity_image_caption_govt_right_column", "type": "string" }
+								{ "name": "project_id", "type": "string" },
+								{ "name": "project_name", "type": "string" }
 							]
 						}
 					},
-					["fcf.activities"], "/fcf_activities/renderreport/acitivity_images").then(function(result) {
+					["fcf.activities"], "/fcf_activities/renderreport/activity_images").then(function(result) {
 						activtyImageDataSource = result instanceof Array ? result[0] : result;
+						next();
+					});
+			},
+			function(next) {
+				ProcessReport.addDataSource(
+					{
+						"name": "FCF Approved Images",
+						"schema": {
+							"fields": [
+								{ "name": "image_id", "type": "number" },
+								{ "name": "image_date", "type": "date" },
+								{ "name": "person_id", "type": "number" },
+								{ "name": "activity_id", "type": "number" },
+								{ "name": "activity_start_date", "type": "date", "dateFormat": "YYYY-MM-DDTHH:mm:ss.msZ" },
+								{ "name": "activity_end_date", "type": "date", "dateFormat": "YYYY-MM-DDTHH:mm:ss.msZ" },
+								{ "name": "project_id", "type": "string" },
+								{ "name": "project_name", "type": "string" }
+							]
+						}
+					},
+					["fcf.activities"], "/fcf_activities/renderreport/approved_images").then(function (result) {
 						next();
 					});
 			},
@@ -352,7 +379,11 @@ module.exports = function(cb) {
 						"join": staffActivities
 					},
 					["fcf.activities"], "/fcf_activities/renderreport/staffs"
-				).then(function() { next(); });
+				).then(function(result) { 
+					staffAndActivitiesDataSource = result instanceof Array ? result[0] : result;
+
+					next(); 
+				});
 			},
 			function(next) {
 				var staffActivityImages = {
@@ -369,8 +400,13 @@ module.exports = function(cb) {
 						"join": staffActivityImages
 					},
 					["fcf.activities"], "/fcf_activities/renderreport/staffs"
-				).then(function() { next(); });
+				).then(function(result) {
+					staffAndImagesDataSource = result instanceof Array ? result[0] : result;
+
+					next();
+				});
 			},
+
 		]);
 
 	}

@@ -99,13 +99,20 @@ h1, h2, h3, h4, h5 { color: #FFF;}
 
 .op-toggle, .op-modal {
 	border-top-color: rgba(0,0,0,0.1);
+<<<<<<< HEAD
+=======
+	display:none;
+>>>>>>> 29185643dcdfd63a7a15be6f7a8af3cc0b345430
 }
 
 .op-icon i {
 	color: #333333;
+<<<<<<< HEAD
 }
 .op-navbar-lpanel .op-icon i {
 	color: #FFF;
+=======
+>>>>>>> 29185643dcdfd63a7a15be6f7a8af3cc0b345430
 }
 .op-icon-inverse {
 	color: #f0f0f0;
