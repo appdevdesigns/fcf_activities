@@ -1,14 +1,10 @@
 module.exports = {
 	"map": {
-		"selectivity": "js/selectivity/selectivity-full.min",
-		"selectivity.css": "js/selectivity/selectivity-full.min.css",
 		// "dropzone": "js/dropzone/dropzone.min",
   //       "dropzone.css": "js/dropzone/dropzone.min.css"
 	},
 	"paths": {
-		"opstools/FCFActivities": "opstools/FCFActivities/FCFActivities.js",
-		"selectivity": "js/selectivity/selectivity-full.min.js",
-		"selectivity.css": "js/selectivity/selectivity-full.min.css"
+		"opstools/FCFActivities": "opstools/FCFActivities/FCFActivities.js"
 	},
 	"bundle": [
 		"opstools/FCFActivities"
@@ -17,13 +13,13 @@ module.exports = {
 		"opstools/FCFActivities": {
 			"deps": [
 				"dropzone",		// from OpsPortal
-				"selectivity"
+				"js/selectivity/selectivity-jquery.min",
 			]
 		},
-		"js/selectivity/selectivity-full.min": {
+		"js/selectivity/selectivity-jquery.min": {
 			"format": "global",
 			"deps": [
-				"js/selectivity/selectivity-full.min.css"
+				"js/selectivity/selectivity-jquery.min.css"
 			],
 			"sideBundle": true
 		},
