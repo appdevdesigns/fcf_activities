@@ -799,6 +799,31 @@ console.error(err);
 
                 }
 
+            },
+
+            //  7) send a request to approval
+            function (next) {
+                Permissions.getUserRoles(req)
+                    .then(function(roles) {
+
+                        var isExist = roles.filter(function(role) { return name == "Activity Approver"; })[0];
+
+                        // When the activity image status is approved or ready and user has approve permission,
+                        // then it will not request to approve.
+                        if (isExist && (currImage.status == 'approved' || currImage.status == 'ready')) {
+                            next();
+                        }
+                        else {
+                            PostApprovalRequest({ data: currImage, action:'updated', languageCode:langCode });
+
+                            next();
+                        }
+                    })
+                    .catch(function(err){
+                        AD.log.error('error: can\'t Permissions.getUserRoles() id:'+currImage.activity+' ', err);
+                        next(err);
+                    });
+
             }
 
         ], function(err, results){ 
@@ -812,7 +837,7 @@ console.error(err);
                 // res.send(finalData);
                 ADCore.comm.success(res,finalData);
 
-                PostApprovalRequest({ data: currImage, action:'updated', languageCode:langCode });
+                // PostApprovalRequest({ data: currImage, action:'updated', languageCode:langCode });
 
             }
 
@@ -1591,4 +1616,5 @@ function cleanData(objectData) {
     objectData = lodash.cloneDeep(objectData);
     return objectData;
 }
+
 
