@@ -806,7 +806,7 @@ console.error(err);
                 Permissions.getUserRoles(req)
                     .then(function(roles) {
 
-                        var isExist = roles.filter(function(role) { return name == "Activity Approver"; })[0];
+                        var isExist = roles.filter(function(role) { return role.name == "Activity Approver"; })[0];
 
                         // When the activity image status is approved or ready and user has approve permission,
                         // then it will not request to approve.
@@ -818,8 +818,7 @@ console.error(err);
 
                             next();
                         }
-                    })
-                    .catch(function(err){
+                    }, function(err){
                         AD.log.error('error: can\'t Permissions.getUserRoles() id:'+currImage.activity+' ', err);
                         next(err);
                     });
