@@ -708,8 +708,9 @@ console.error(err);
 
                 // var fields = [ 'date', 'caption' ];
                 var newDate = req.param('date');
-                if (newDate) {
-                    currImage.date = new Date(newDate);
+                if (newDate && Date.parse(newDate) == true) {
+                    // currImage.date = new Date(newDate);
+                    currImage.date = newDate;
                 }
 
                 currImage.save()
