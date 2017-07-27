@@ -8,6 +8,7 @@ var AD = require('ad-utils');
 var path = require('path');
 var fs = require('fs');
 var lodash = require('lodash');
+var moment = require('moment');
 
 var jimp = require('jimp');
 
@@ -129,7 +130,7 @@ module.exports = {
 
             var simpleList = FCFActivityImages.toClientList(list, langCode);
             ADCore.comm.success(res,simpleList);
-        })
+        }) 
         .catch(function(err){
 
             ADCore.comm.error(res, err);
@@ -708,9 +709,10 @@ console.error(err);
 
                 // var fields = [ 'date', 'caption' ];
                 var newDate = req.param('date');
-                if (newDate && Date.parse(newDate) == true) {
+                var momentDate = moment(newDate);
+                if (newDate && momentDate.isValid()) {
                     // currImage.date = new Date(newDate);
-                    currImage.date = newDate;
+                    currImage.date = momentDate.format('YYYY-MM-DD');
                 }
 
                 currImage.save()
