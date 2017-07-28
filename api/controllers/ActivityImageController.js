@@ -8,7 +8,6 @@ var AD = require('ad-utils');
 var path = require('path');
 var fs = require('fs');
 var lodash = require('lodash');
-var moment = require('moment');
 
 var jimp = require('jimp');
 
@@ -709,10 +708,22 @@ console.error(err);
 
                 // var fields = [ 'date', 'caption' ];
                 var newDate = req.param('date');
-                var momentDate = moment(newDate);
-                if (newDate && momentDate.isValid()) {
-                    // currImage.date = new Date(newDate);
-                    currImage.date = momentDate.format('YYYY-MM-DD');
+                if (newDate) {
+                    newDate = newDate.trim();
+
+                    // 2017-08-19
+                    if (newDate.match(/\d\d\d\d-\d\d-\d\d/)) {
+                        currImage.date = newDate;
+                    }
+                    // remove timezone
+                    else if (newDate.indexOf('GMT')) {
+                        // 'Wed Jul 19 2017 00:00:00 GMT+1000' to 'Wed Jul 19 2017 00:00:00'
+                        currImage.date = new Date(newDate.substring(0, newDate.indexOf('GMT')));
+                    }
+                    else {
+                        currImage.date = new Date(newDate);
+                    }
+
                 }
 
                 currImage.save()
