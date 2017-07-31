@@ -707,14 +707,25 @@ console.error(err);
             function(next) {
 
                 // var fields = [ 'date', 'caption' ];
-		var newDate = req.param('date');
+		        var newDate = req.param('date');
                 if (newDate) {
                     newDate = newDate.trim();
 
                     // 2017-08-19
                     if (newDate.match(/\d\d\d\d-\d\d-\d\d/)) {
-                        // 2017-08-19T00:00:00
-                        currImage.date = new Date(newDate + 'T00:00:00');
+
+                        var getTimezone = function () {
+                            var tzo = -new Date().getTimezoneOffset(),
+                                dif = tzo >= 0 ? '+' : '-',
+                                pad = function(num) {
+                                    var norm = Math.abs(Math.floor(num));
+                                    return (norm < 10 ? '0' : '') + norm;
+                                };
+
+                            return dif + pad(tzo / 60) + ':' + pad(tzo % 60);
+                        }
+
+                        currImage.date = new Date(newDate + 'T00:00:00' + getTimezone());
                     }
                     // remove timezone
                     else if (newDate.indexOf('GMT')) {
