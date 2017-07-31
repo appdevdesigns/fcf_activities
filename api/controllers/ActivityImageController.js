@@ -707,13 +707,14 @@ console.error(err);
             function(next) {
 
                 // var fields = [ 'date', 'caption' ];
-                var newDate = req.param('date');
+		var newDate = req.param('date');
                 if (newDate) {
                     newDate = newDate.trim();
 
                     // 2017-08-19
                     if (newDate.match(/\d\d\d\d-\d\d-\d\d/)) {
-                        currImage.date = newDate;
+                        // 2017-08-19T00:00:00
+                        currImage.date = new Date(newDate + 'T00:00:00');
                     }
                     // remove timezone
                     else if (newDate.indexOf('GMT')) {
