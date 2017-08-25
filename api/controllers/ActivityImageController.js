@@ -157,7 +157,7 @@ module.exports = {
 
 
         FCFActivityImages.findOne(filter)
-        .populate('traslations')
+        .populate('translations')
         .populate('uploadedBy')
         .populate('taggedPeople')
         .then(function(image){
@@ -169,6 +169,53 @@ module.exports = {
             err._model = 'FCFActivityImages';
             err._id = id;
         });
+
+    },
+
+    getCount:function(req, res) {
+        var user = ADCore.user.current(req);
+
+        var guid = user.GUID();
+
+        GUID2Person.findOne({guid: guid})
+        .then(function(data){
+            FCFPerson.findOne({IDPerson: data.person})
+            .populate('taggedInImages')
+            .then(function(data2){
+                var images = data2.taggedInImages;
+                var curPerImg = 0;
+                var d = new Date();
+                var n = d.getMonth();
+                var y = d.getFullYear();
+                var startDate = new Date();
+                var endDate = new Date();
+                if (n <= 3) {
+                    startDate = new Date(y+'-01-01T00:00:00.000Z');
+                    endDate = new Date(y+'-05-01T00:00:00.000Z');
+                } else if (n <= 7) {
+                    startDate = new Date(y+'-05-01T00:00:00.000Z');
+                    endDate = new Date(y+'-09-01T00:00:00.000Z');
+                } else if (n <= 11) {
+                    startDate = new Date(y+'-09-01T00:00:00.000Z');
+                    endDate = new Date(y+'-12-01T00:00:00.000Z');
+                }
+                images.forEach(function(i) {
+                    var imageDate = new Date(i.date);
+                    if (imageDate >= startDate && imageDate < endDate && (i.status == "approved" || i.status == "ready")) {
+                        curPerImg++;
+                    }
+                });
+                ADCore.comm.success(res, {count: curPerImg} );
+            })
+            .catch(function(err){
+                ADCore.comm.error(res, err);
+                err._model = 'FCFPerson';
+                err._id = data.person;
+            });
+        })
+        .catch(function(err) {
+            ADCore.comm.error(res, err);
+        })
 
     },
 

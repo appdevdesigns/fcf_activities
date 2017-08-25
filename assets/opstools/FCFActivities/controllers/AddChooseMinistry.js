@@ -170,6 +170,21 @@ steal(
 
 								});
 
+							AD.comm.service.get({ url: '/fcf_activities/activityimagecount' })
+								.fail(function (err) {
+									console.error('problem looking up user\'s team :');
+									console.error(err);
+								})
+								.then(function (res) {
+
+									var div = document.createElement("div");
+									div.classList.add("octobubble");
+									var textnode = document.createTextNode("You have " + res.count + " photos approved and ready!");
+									div.appendChild(textnode);
+									document.getElementById('fcf-activity-add-chooseTeam').appendChild(div);
+
+								});
+
 
 							/*
 										var modelUserTeam = AD.Model.get('opstools.FCFActivities.UserTeam');

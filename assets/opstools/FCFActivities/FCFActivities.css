@@ -332,3 +332,16 @@ body {
 .selectivity-backdrop {
 	z-index:9 !important;
 }
+.octobubble {
+	position: absolute;
+	padding: 15px 0px 15px 50px;
+	border-radius: 30px;
+	background: #40403F url(https://adroit.appdevdesigns.net/images/FCFCore/fcf-logo.jpg) 15px 7px / 30px 33px no-repeat;
+	color: white;
+	top: 35px;
+	left: 0px;
+	right: 0px;
+	width: 320px;
+	margin: 0 auto;
+	font-size: 13px;
+}
