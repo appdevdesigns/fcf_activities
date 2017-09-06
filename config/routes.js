@@ -35,6 +35,7 @@ module.exports = {
   // Access to Activity Image Resource 
   'get /fcf_activities/activityimage':'fcf_activities/ActivityImageController.find',
   'get /fcf_activities/activityimage/:id':'fcf_activities/ActivityImageController.findOne',
+  'get /fcf_activities/originalactivityimage/:id':'fcf_activities/ActivityImageController.findOrig',
   'get /fcf_activities/activityimagecount':'fcf_activities/ActivityImageController.getCount',
   'post /fcf_activities/activityimage':'fcf_activities/ActivityImageController.create',
   'put /fcf_activities/activityimage/:id':'fcf_activities/ActivityImageController.update',
