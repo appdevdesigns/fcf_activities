@@ -6,7 +6,8 @@ steal(
 				// Namespacing conventions:
 				// AD.Model.extend('[application].[Model]', {static}, {instance} );  --> Object
 				AD.Model.extend('opstools.FCFActivities.ActivityImage', {
-					getCount: 'GET /fcf_activities/activityimagecount'
+					getCount: 'GET /fcf_activities/activityimagecount',
+                                        findOrig: 'GET /fcf_activities/originalactivityimage/{id}'
 					/*
 							findAll: 'GET /fcf_activities/activityimage/find',
 							findOne: 'GET /fcf_activities/activityimage/{id}',

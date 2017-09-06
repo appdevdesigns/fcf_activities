@@ -171,6 +171,34 @@ module.exports = {
         });
 
     },
+	
+    // get /fcf_activities/originalactivityimage/:id?[filter]
+    // normal:  get /fcf_activities/originalactivityimage/:id
+    // optional: get /fcf_activities/originalactivityimage/?param=X
+    //
+    findOrig:function(req, res) {
+
+        var id = req.param('id');
+
+        var filter = req.query;
+        if (id) filter.id = id;
+
+
+        FCFActivityImages.findOne(filter)
+        .populate('translations')
+        .populate('uploadedBy')
+        .populate('taggedPeople')
+        .then(function(image){
+            image.translate("en");
+            ADCore.comm.success(res, image.toClient() );
+        })
+        .catch(function(err){
+            ADCore.comm.error(res, err);
+            err._model = 'FCFActivityImages';
+            err._id = id;
+        });
+
+    },
 
     getCount:function(req, res) {
         var user = ADCore.user.current(req);
