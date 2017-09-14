@@ -1165,7 +1165,6 @@ console.error(err);
                     .write(newFile, function(err){
 // console.log('... jimp image .write() complete.');
 
-                        res.AD.success({ path:returnName, name:tempName });
 
 
                         // let's try to write out a scaled version in addition:
@@ -1174,8 +1173,10 @@ console.error(err);
                         renderFile(listRenders, newFile, function(err){
                             if (err) {
                                 ADCore.error.log("FCFActivities:ActivityImageController:upload() Error Rendering File.", { error:err, newFile:newFile });  
-                            }
-                        })
+                            } else {
+	                        res.AD.success({ path:returnName, name:tempName });
+			    }
+			})
 
 
                     });
