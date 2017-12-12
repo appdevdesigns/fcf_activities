@@ -471,6 +471,8 @@ module.exports = {
 
 						if (imageFile.indexOf('_scaled.') > -1)
 							imageFile = imageFile.replace('_scaled.', '_print.');
+                            
+                        if (moment(img.date) <= moment().subtract(12, 'month')) return false;
 
 						results.push({
 							'image_id': img.id,
