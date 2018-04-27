@@ -823,6 +823,8 @@ var dzImage = _this.dom.dropzone.find('img');
 								// })
 
 								_this.obj.dropzone.on('success', function(file, response) {
+									
+									if (typeof response == "string") response = JSON.parse(response);
 
 									// NOTE:  file  is the preview icon that is displayed on the dropzone element
 
