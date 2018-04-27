@@ -779,7 +779,7 @@ console.error(err);
             function(next) {
 
                 // var fields = [ 'date', 'caption' ];
-		var newDate = req.param('date');
+		        var newDate = req.param('date');
                 if (newDate) {
                     newDate = newDate.trim();
 
@@ -809,6 +809,10 @@ console.error(err);
                     }
 
                 }
+                
+                var status = req.param('status');
+                
+                if (typeof status != "undefined") currImage.status = status;
 
                 currImage.save()
                 .then(function(savedImg){
@@ -1154,6 +1158,20 @@ console.error(err);
                 var returnName = newFile.replace(path.join(processPath, 'assets'), '');
                 // var returnName = scaledFile.replace(path.join(processPath, 'assets'), '');
 
+                // we are exceeding the browser 2 minute timeout for image rendering
+                // this allows us to take more timeout
+                
+                // const seconds = 180;
+                var isFinished = false;
+                var interval = null;
+                
+                // send whitespace to keep connection alive
+                interval = setInterval(() => {
+                    if (!isFinished) {
+                        console.log("just wait...")
+                        res.write(' ');
+                    }
+                }, 20000);
 
                 //// NOTE: use jimp to open and save the files.  This should perform an 
                 //// auto rotate on the image based upon any existing EXIF info.
@@ -1162,6 +1180,7 @@ console.error(err);
 
                     // this will re orient an image based upton EXIF info:
                     image
+                    .exifRotate()
                     .write(newFile, function(err){
 // console.log('... jimp image .write() complete.');
 
@@ -1171,17 +1190,22 @@ console.error(err);
                         var listRenders = getRenderList();
 
                         renderFile(listRenders, newFile, function(err){
+                            
+                            clearInterval(interval);
+                            isFinished = true;
                             if (err) {
                                 ADCore.error.log("FCFActivities:ActivityImageController:upload() Error Rendering File.", { error:err, newFile:newFile });  
                             } else {
-	                        res.AD.success({ path:returnName, name:tempName });
-			    }
-			})
-
+                               res.AD.success({ path:returnName, name:tempName }, null, true);
+                            }
+                            
+            			})
 
                     });
                 })
                 .catch(function(err){
+                    clearInterval(interval);
+                    isFinished = true;
                     res.AD.error(err, 500);
                 });
 
