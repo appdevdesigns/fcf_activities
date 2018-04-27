@@ -24,7 +24,7 @@
   "dependencies": {
     "ad-utils": "git://github.com/appdevdesigns/ad-utils",
     "fs-extra": "^2.1.2",
-    "jimp": "^0.2.27",
+    "jimp": "git://github.com/appdevdesigns/jimp",
     "lodash": "^4.13.1",
     "moment": "^2.12.0"
   },
