@@ -334,9 +334,9 @@ body {
 }
 .octobubble {
 	position: absolute;
-	padding: 15px 0px 15px 50px;
+	padding: 10px 0px 10px 50px;
 	border-radius: 30px;
-	background: #40403F url(https://adroit.appdevdesigns.net/images/FCFCore/fcf-logo.jpg) 15px 7px / 30px 33px no-repeat;
+	background: #40403F url(https://adroit.appdevdesigns.net/images/FCFCore/fcf-logo.jpg) 15px 11px / 30px 33px no-repeat;
 	color: white;
 	top: 35px;
 	left: 0px;

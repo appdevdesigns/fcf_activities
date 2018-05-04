@@ -179,8 +179,12 @@ steal(
 
 									var div = document.createElement("div");
 									div.classList.add("octobubble");
-									var textnode = document.createTextNode("You have " + res.count + " photos approved and ready!");
+									var textnode = document.createTextNode("You have " + res.current + " photos approved and ready!");
+									var linebreak = document.createElement("br");
+									var textnode2 = document.createTextNode("You had " + res.previous + " in the last reporting period.");
 									div.appendChild(textnode);
+									div.appendChild(linebreak);
+									div.appendChild(textnode2);
 									document.getElementById('fcf-activity-add-chooseTeam').appendChild(div);
 
 								});
