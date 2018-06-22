@@ -392,6 +392,11 @@ steal(
 
 						this.dom.inputImage.val(image.image);
 						this.dom.inputCaption.val(image.caption);
+						var leng = 0;
+						if (image.caption) {
+							leng = image.caption.length;
+						}
+						this.dom.inputCaptionCounter.html(255 - leng);
 						this.values.caption = image.caption;
 						
 						this.dom.inputCaptionGovt.val(image.caption_govt);
