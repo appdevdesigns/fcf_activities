@@ -339,13 +339,13 @@ msgstr "Click to open the file browser"
 #. code: en
 #. key: fcf.activity.image.form.caption
 msgid "caption"
-msgstr "caption"
+msgstr "Caption"
 
 #. path: opstool-FCFActivities
 #. code: en
 #. key: fcf.activity.image.form.tags
 msgid "tags"
-msgstr "tags"
+msgstr "People in Photo"
 
 #. path: opstool-FCFActivities
 #. code: en
@@ -417,7 +417,7 @@ msgstr "Dashboard"
 #. code: en
 #. key: fcf.activity.image.form.date
 msgid "date of photo"
-msgstr "date of photo"
+msgstr "Date of Photo"
 
 #. path: opstool-FCFActivities
 #. code: en

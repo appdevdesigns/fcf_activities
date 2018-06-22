@@ -275,6 +275,7 @@ steal(
 						this.dom.inputImage.val('');
 						this.dom.inputCaption.val('');
 						this.dom.inputCaptionGovt.val('');
+						this.dom.inputCaptionCounter.html('255');
 						this.dom.inputDate.data("DateTimePicker").date(null);
 						this.dom.inputTags.selectivity('value', []);
 						this.dom.peopleObjects.find('li.fcf-activity-people-objects').show();
@@ -907,6 +908,7 @@ dzImage.prop('src', '').hide();
 						this.dom.inputActivity = this.dom.imageForm.find('#image-activity');
 						this.dom.inputCaption = this.dom.imageForm.find('#image-caption');
 						this.dom.inputCaptionGovt = this.dom.imageForm.find('#image-caption-govt');
+						this.dom.inputCaptionCounter = this.dom.imageForm.find('#charCount');
 						this.dom.inputDate = this.dom.imageForm.find('#image-date');
 						this.dom.inputTags = this.element.find('#image-tags');
 						this.dom.peopleObjects = this.element.find('.fcf-activitiy-people-list');
