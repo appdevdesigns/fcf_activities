@@ -275,7 +275,7 @@ steal(
 						this.dom.inputImage.val('');
 						this.dom.inputCaption.val('');
 						this.dom.inputCaptionGovt.val('');
-						this.dom.inputCaptionCounter.html('255');
+						this.dom.inputCaptionCounter.html('240');
 						this.dom.inputDate.data("DateTimePicker").date(null);
 						this.dom.inputTags.selectivity('value', []);
 						this.dom.peopleObjects.find('li.fcf-activity-people-objects').show();
@@ -396,7 +396,7 @@ steal(
 						if (image.caption) {
 							leng = image.caption.length;
 						}
-						this.dom.inputCaptionCounter.html(255 - leng);
+						this.dom.inputCaptionCounter.html(240 - leng);
 						this.values.caption = image.caption;
 						
 						this.dom.inputCaptionGovt.val(image.caption_govt);
