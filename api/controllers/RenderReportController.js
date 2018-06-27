@@ -74,8 +74,8 @@ function populateStaffInfo(persons) {
 				reportData.person_work_permit_expire_date = p.WPExpireDate;
 
 				reportData.project_title = p.Project;
-				if (p.project) {
-					reportData.project_title = p.project.displayName('th');
+				if (p.IDProjectMain) {
+					reportData.project_title = p.IDProjectMain.displayName('th');
 				}
 
 				reportData.organization_name = 'N/A (Organization name)';
@@ -184,7 +184,7 @@ module.exports = {
 				FCFPerson.find(memberFilter)
 					.populate('taggedInImages', { status: ['approved', 'ready'] })
 					.populate('codeNationality')
-					.populate('project')
+					.populate('IDProjectMain')
 					.fail(function (err) {
 						AD.log(err);
 						next(err);
