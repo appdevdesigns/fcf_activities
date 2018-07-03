@@ -437,7 +437,8 @@ module.exports = {
 		// what is the current language_code of the User
 		// var langCode = ADCore.user.current(req).getLanguageCode();
 		var langCode = 'th',// TODO
-			startDate = req.param('Start date');
+			startDate = req.param('Start date'),
+            endDate = req.param('End date');
 
 		var personFilter = { WPExpireDate: { '!': null } },
 			persons = [],
@@ -475,9 +476,14 @@ module.exports = {
 
 						if (imageFile.indexOf('_scaled.') > -1)
 							imageFile = imageFile.replace('_scaled.', '_print.');
-                            
-                        if (moment(img.date) <= moment().subtract(12, 'month')) return false;
-
+                        
+                        
+                        if (startDate && endDate) {
+                            if (moment(img.date) < moment(startDate) && moment(img.date) > moment(endDate)) return false;
+                        } else {
+                            if (moment(img.date) <= moment().subtract(6, 'month')) return false;
+                        }
+                        
 						results.push({
 							'image_id': img.id,
 							'image_file_name': imageFile,
