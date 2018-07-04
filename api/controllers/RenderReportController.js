@@ -479,7 +479,11 @@ module.exports = {
                         
                         
                         if (startDate && endDate) {
-                            if (moment(img.date) < moment(startDate) && moment(img.date) > moment(endDate)) return false;
+                            var imgDate = parseInt(moment(img.date).format("YYYYMMDD"));
+                            var startDateFormat = parseInt(moment(startDate, "M/D/YY").format("YYYYMMDD"));
+                            var endDateFormat = parseInt(moment(endDate, "M/D/YY").format("YYYYMMDD"));
+                            if (imgDate < startDateFormat) return false;
+                            if (imgDate > endDateFormat) return false;
                         } else {
                             if (moment(img.date) <= moment().subtract(6, 'month')) return false;
                         }
