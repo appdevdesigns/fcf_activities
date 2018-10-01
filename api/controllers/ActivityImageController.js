@@ -1405,6 +1405,7 @@ var PostApprovalRequest = function (options) {
     var listTeammates = null;
     var listTeammatesTagged = null;
     var listTeammatesNotTagged = null;
+    var status = options.data.status || "pending";
 
 
     var commonData = null;
@@ -1620,7 +1621,9 @@ if (person.avatar == null) {
                         "activity": activity,
                         "untaggedPeople": listTeammatesNotTagged
                     }
-                }
+                },
+                
+                "status": status
 
             };
 
