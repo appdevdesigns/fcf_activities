@@ -922,7 +922,8 @@ console.error(err);
                         // When the activity image status is approved or ready and user has approve permission,
                         // then it will not request to approve.
                         if (isExist && (currImage.status == 'approved' || currImage.status == 'ready')) {
-                            next();
+                            // update the original approval queue item so we don't have any orphaned items
+                            PostApprovalRequest({ data: currImage, action:currImage.status, languageCode:langCode });
                         }
                         else {
                             PostApprovalRequest({ data: currImage, action:'updated', languageCode:langCode });
