@@ -924,6 +924,8 @@ console.error(err);
                         if (isExist && (currImage.status == 'approved' || currImage.status == 'ready')) {
                             // update the original approval queue item so we don't have any orphaned items
                             PostApprovalRequest({ data: currImage, action:currImage.status, languageCode:langCode });
+                            
+                            next();
                         }
                         else {
                             PostApprovalRequest({ data: currImage, action:'updated', languageCode:langCode });
