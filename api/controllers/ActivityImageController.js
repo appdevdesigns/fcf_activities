@@ -1405,8 +1405,12 @@ var PostApprovalRequest = function (options) {
     var listTeammates = null;
     var listTeammatesTagged = null;
     var listTeammatesNotTagged = null;
-    var status = options.data.status || "pending";
-
+    var status = "pending";
+    console.log("before status: " + status);
+    if (options.data.status == "approved" || options.data.status == "ready") {
+        status = options.data.status;
+    }
+    console.log("after status: " + status);
 
     var commonData = null;
 

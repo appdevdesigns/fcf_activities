@@ -32,8 +32,9 @@ module.exports = function(cb) {
         if (data.status == 'approved') {
 			// AD.log('... setting approved:');
 
-            var updatedValues = JSON.parse(data.data);
-            if (updatedValues) {
+            var updates = data.data;
+            if (updates.length > 0) {
+                var updatedValues = JSON.parse(updates);
                 FCFActivity.findOne({id:data.reference.id})
 					.populate('objectives')
 					.populate('translations')
@@ -107,9 +108,9 @@ module.exports = function(cb) {
         // if activity is approved, then pass this on to the Translation Request tool.
         if (data.status == 'approved') {
 			// AD.log('... setting approved:');
-
-            var updatedValues = JSON.parse(data.data);
-            if (updatedValues) {
+            var updates = data.data;
+            if (updates.length > 0) {
+                var updatedValues = JSON.parse(updates);
                 FCFActivityImages.findOne({id:data.reference.id})
 					.populate('translations')
 					.populate('taggedPeople')
