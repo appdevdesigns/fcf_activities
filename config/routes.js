@@ -43,7 +43,17 @@ module.exports = {
 
   'post /fcf_activities/activityimageupload':'fcf_activities/ActivityImageController.upload',
 
-  'get /fcf_activities/teammembers':'fcf_activities/ActivityReportController.teammembers'
+  'get /fcf_activities/teammembers':'fcf_activities/ActivityReportController.teammembers',
+
+
+  ////
+  //// Mobile API additions
+  ////
+  //// get /fcf_activities/mobile/myactivityimages : return the users activity images
+  //// get /fcf_activities/mobile/myteams : return the user's team information
+  ////
+  'get /fcf_activities/mobile/myactivityimages':'fcf_activities/ActivityImageController.mobileMyImages',
+  'get /fcf_activities/mobile/myteams':'fcf_activities/ActivityImageController.mobileMyTeams',
 
 
 
