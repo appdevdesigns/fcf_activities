@@ -257,8 +257,15 @@ module.exports = {
 
     create:function(req, res) {
 
+
         var fields = ['image', 'activity', 'date', 'caption' ];
         var tags = req.param('taggedPeople');
+
+        // ensure .taggedPeople is an array
+        // might be a single string '1492'
+        if (!Array.isArray(tags)) {
+            tags = [tags];
+        }
 
         var values = {};
         fields.forEach(function(f){
