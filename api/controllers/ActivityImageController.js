@@ -925,12 +925,12 @@ console.error(err);
                         // then it will not request to approve.
                         if (isExist && (currImage.status == 'approved' || currImage.status == 'ready')) {
                             // update the original approval queue item so we don't have any orphaned items
-                            PostApprovalRequest({ data: currImage, action:'updated', languageCode:langCode });
+                            //PostApprovalRequest({ data: currImage, action:'updated', languageCode:langCode });
                             
                             next();
                         }
                         else {
-                            PostApprovalRequest({ data: currImage, action:'updated', languageCode:langCode });
+                            //PostApprovalRequest({ data: currImage, action:'updated', languageCode:langCode });
 
                             next();
                         }
