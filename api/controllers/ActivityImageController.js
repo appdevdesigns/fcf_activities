@@ -1286,11 +1286,21 @@ console.error(err);
 
                     FCFActivityImages.find(filter)
                     .populate('activity')
+                    .populate('translations')
                     .then((list)=>{
 
                         allActivities = list;
-                        next();
 
+                        // use toClient() logic to get these fields:
+                        var copyFields = ['caption', 'caption_govt', 'image'];
+                        allActivities.forEach((a)=>{
+                            var simpleA = a.toClient('en');
+                            copyFields.forEach((f)=>{
+                                a[f] = simpleA[f];
+                            })
+                        })
+
+                        next();
                     })
                     .catch(next);
 
