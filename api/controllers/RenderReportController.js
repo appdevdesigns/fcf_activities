@@ -400,7 +400,7 @@ module.exports = {
 					return r.project_id;
 				}));
 
-				FCFProject.find({ IDProject: projectIds }, { fields: ['IDProject', 'ProjectNameEng'] })
+				FCFProject.find({ IDProject: projectIds }, { fields: ['IDProject', 'ProjectNameEng', 'ProjectNameNat'] })
 					.fail(next)
 					.done(function (projects) {
 
@@ -409,6 +409,7 @@ module.exports = {
 								var project = projects.filter(function (p) { return p.IDProject == results[i].project_id; })[0];
 								if (project) {
 									results[i].project_name = project.ProjectNameEng;
+									results[i].project_name_nat = project.ProjectNameNat;
 								}
 							}
 						}
@@ -553,7 +554,7 @@ module.exports = {
 					return r.project_id;
 				}));
 
-				FCFProject.find({ IDProject: projectIds }, { fields: ['IDProject', 'ProjectNameEng'] })
+				FCFProject.find({ IDProject: projectIds }, { fields: ['IDProject', 'ProjectNameEng', 'ProjectNameNat'] })
 					.fail(next)
 					.done(function (projects) {
 
@@ -562,6 +563,7 @@ module.exports = {
 								var project = projects.filter(function (p) { return p.IDProject == results[i].project_id; })[0];
 								if (project) {
 									results[i]['project_name'] = project.ProjectNameEng;
+									results[i]['project_name_nat'] = project.ProjectNameNat;
 								}
 							}
 						}
@@ -663,7 +665,7 @@ module.exports = {
 					return r.project_id;
 				}));
 
-				FCFProject.find({ IDProject: projectIds }, { fields: ['IDProject', 'ProjectNameEng'] })
+				FCFProject.find({ IDProject: projectIds }, { fields: ['IDProject', 'ProjectNameEng', 'ProjectNameNat'] })
 					.fail(next)
 					.done(function (projects) {
 
@@ -672,6 +674,7 @@ module.exports = {
 								var project = projects.filter(function (p) { return p.IDProject == results[i].project_id; })[0];
 								if (project) {
 									results[i].project_name = project.ProjectNameEng;
+									results[i].project_name_nat = project.ProjectNameNat;
 								}
 							}
 						}
