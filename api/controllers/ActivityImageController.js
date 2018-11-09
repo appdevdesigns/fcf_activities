@@ -566,6 +566,8 @@ console.error(err);
         var isImageSwap = false;    // are they swapping out an image?
 
         var finalData = null;       // this is what we will send back
+        
+        var userIsApprover = false;
 
         var id = req.param('id');
         if (!id) {
@@ -792,6 +794,25 @@ console.error(err);
                 }
 
             },
+            
+            //  4b) get role of user
+            function (next) {
+                Permissions.getUserRoles(req)
+                    .then(function(roles) {
+
+                        var hasApprover = roles.filter(function(role) { return role.name == "Activity Approver"; })[0];
+                        
+                        if (hasApprover) {
+                            userIsApprover = true;
+                        }
+                        next();
+
+                    }, function(err){
+                        AD.log.error('error: can\'t Permissions.getUserRoles() id:'+currImage.activity+' ', err);
+                        next(err);
+                    });
+
+            },
 
             // 5) now update the remaining values and save
             function(next) {
@@ -828,10 +849,11 @@ console.error(err);
 
                 }
                 
-                var status = req.param('status');
+                if (userIsApprover) {
+                    var status = req.param('status');
+                    if (typeof status != "undefined") currImage.status = status;
+                }
                 
-                if (typeof status != "undefined") currImage.status = status;
-
                 currImage.save()
                 .then(function(savedImg){
 
@@ -923,29 +945,11 @@ console.error(err);
 
             //  7) send a request to approval
             function (next) {
-                Permissions.getUserRoles(req)
-                    .then(function(roles) {
+                // When the activity image status is approved or ready and user has approve permission,
+                // then it will not request to approve.
+                PostApprovalRequest({ data: currImage, action:'updated', languageCode:langCode });
 
-                        var isExist = roles.filter(function(role) { return role.name == "Activity Approver"; })[0];
-
-                        // When the activity image status is approved or ready and user has approve permission,
-                        // then it will not request to approve.
-                        if (isExist && (currImage.status == 'approved' || currImage.status == 'ready')) {
-                            // update the original approval queue item so we don't have any orphaned items
-                            //PostApprovalRequest({ data: currImage, action:'updated', languageCode:langCode });
-                            
-                            next();
-                        }
-                        else {
-                            //PostApprovalRequest({ data: currImage, action:'updated', languageCode:langCode });
-
-                            next();
-                        }
-                    }, function(err){
-                        AD.log.error('error: can\'t Permissions.getUserRoles() id:'+currImage.activity+' ', err);
-                        next(err);
-                    });
-
+                next();
             }
 
         ], function(err, results){ 
@@ -1808,7 +1812,7 @@ var PostApprovalRequest = function (options) {
 // console.log('... PostApprovalRequest:', options);
 
     var action = 'fcf.activityapproval.newImage';
-    if (options.action == 'updated') action = 'fcf.activityapproval.updatedImage';
+    if (options.action == 'updated' || options.action == 'approved' || options.action == 'ready') action = 'fcf.activityapproval.updatedImage';
 
     var languageCode = options.languageCode || Multilingual.languages.default();
 
@@ -1989,6 +1993,7 @@ if (person.avatar == null) {
             
             FCFActivities.approvals.base({
                 icon:       "fa-file-image-o",
+                status:     status,
                 action:     action,
                 createdAt:  options.data.createdAt,
                 creator:{
