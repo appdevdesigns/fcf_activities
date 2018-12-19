@@ -800,7 +800,7 @@ console.error(err);
                 Permissions.getUserRoles(req)
                     .then(function(roles) {
 
-                        var hasApprover = roles.filter(function(role) { return role.name == "Activity Approver"; })[0];
+                        var hasApprover = roles.filter(function(role) { return role.name.indexOf("Activity Approver") > -1 })[0];
                         
                         if (hasApprover) {
                             userIsApprover = true;
