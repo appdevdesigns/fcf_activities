@@ -9,6 +9,8 @@ var path = require('path');
 var fs = require('fs');
 var lodash = require('lodash');
 var _ = require('lodash');
+var async = require('async');
+var child_process = require('child_process');
 
 var jimp = require('jimp');
 
@@ -1153,43 +1155,32 @@ console.error(err);
 
         })
     },
-
-
-
-
-    upload:function(req, res) {
-
-        req.file('imageFile').upload({}, function(err, list){
-
+    
+    
+    
+    
+    upload: function(req, res) {
+        req.file('imageFile').upload({}, function(err, uploadList) {
+            
             if (err) {
                 ADCore.comm.error(res, err);
-            } else {
-
-                var tempFile = list[0].fd;
-                var parts = list[0].fd.split(path.sep)
-                var tempName = parts[parts.length-1];
-
-                var processPath = process.cwd();
-                var newFile = path.join(processPath, 'assets', 'data', 'fcf', 'images', 'temp', tempName);
-
-                // var sParts = tempName.split('.');
-                // sParts[0] += '_scaled';
-                // var scaledTempName = sParts.join('.');
-                // var scaledFile = path.join(processPath, 'assets', 'data', 'fcf', 'images', 'temp', scaledTempName);
-                var scaledFile = FCFCore.paths.images.scaled(newFile);
-
-
-                // the return name should be the path after assets/
-                var returnName = newFile.replace(path.join(processPath, 'assets'), '');
-                // var returnName = scaledFile.replace(path.join(processPath, 'assets'), '');
-
-                // we are exceeding the browser 2 minute timeout for image rendering
-                // this allows us to take more timeout
+            } 
+            else {
                 
-                // const seconds = 180;
+                var tempFile = uploadList[0].fd;
+                var imageName = path.basename(tempFile);
+                var processPath = process.cwd();
+                
+                // Web path to the image
+                var targetPathWeb = path.join('data', 'fcf', 'images', 'temp');
+                // Filesystem path to the image
+                var targetPath = path.join(processPath, 'assets', targetPathWeb);
+                
+                // There is a timeout by the browser and/or proxy server after
+                // about 2 minutes of inactivity. The following allows us to
+                // take  more time for image processing.
                 var isFinished = false;
                 var interval = null;
-                
                 // send whitespace to keep connection alive
                 interval = setInterval(() => {
                     if (!isFinished) {
@@ -1197,51 +1188,35 @@ console.error(err);
                         res.write(' ');
                     }
                 }, 20000);
-
-                //// NOTE: use jimp to open and save the files.  This should perform an 
-                //// auto rotate on the image based upon any existing EXIF info.
-                jimp.read(tempFile)
-                .then(function(image){
-
-                    console.log("inside jimp read");
+                
+                var listRenders = getRenderList();
+                processImageFile(listRenders, tempFile, targetPath)
+                .then(() => {
                     
-                    // this will re orient an image based upton EXIF info:
-                    image
-                    // .exifRotate()
-                    .write(newFile, function(err){
-                    console.log('... jimp image .write() complete.');
-
-
-
-                        // let's try to write out a scaled version in addition:
-                        var listRenders = getRenderList();
-
-                        renderFile(listRenders, newFile, function(err){
-                            
-                            clearInterval(interval);
-                            isFinished = true;
-                            if (err) {
-                                ADCore.error.log("FCFActivities:ActivityImageController:upload() Error Rendering File.", { error:err, newFile:newFile });  
-                            } else {
-                               res.AD.success({ path:returnName, name:tempName }, null, true);
-                            }
-                            
-            			})
-
-                    });
+                    clearInterval(interval);
+                    isFinished = true;
+                    if (err) {
+                        ADCore.error.log("FCFActivities:ActivityImageController:upload() Error Rendering File.", { error:err, newFile:newFile });  
+                    } 
+                    else {
+                       res.AD.success({ 
+                           path: path.join(targetPathWeb, imageName), 
+                           name: imageName 
+                       }, null, true);
+                    }
+                    
                 })
-                .catch(function(err){
-                    console.log('... jimp read error.', err);
+                .catch((err) => {
+                    console.log('Image processing error', err);
                     clearInterval(interval);
                     isFinished = true;
                     res.AD.error(err, 500);
                 });
-
+                
             }
         })
-
-
     },
+    
 
 
     // get /fcf_activities/mobile/myactivityimages?[filter]
@@ -1711,9 +1686,126 @@ function getRenderList() {
 }
 
 
+/**
+ * Auto-orient an image file, then create additional renderings of it
+ * based on the given `renders` array. Processing is handled by the external
+ * ImageMagick 'convert' utility.
+ *
+ * @param {array} renders
+ *      Array of basic objects. Each object specifies how an additional
+ *      render of the image will be done. 
+ *      See getRenderList() and ImageRenders above.
+ *      [
+ *          {
+ *              name: {string},     // to be appended to the new filename
+ *              quality: {integer}, // JPEG quality?
+ *              width: {integer},   // max width in pixels to resize to
+ *              height: {integer},  // max height in pixels to resize to
+ *              default: {boolean}, // no effect in this function
+ *          },
+ *          ...
+ *      ]
+ *      Should this even be a function parameter? We could just call
+ *      the getRenderList() function directly here.
+ * @param {string} sourceFile
+ *      Full path and filename of the source image.
+ * @param {string} [targetDir]
+ *      Full path of the target directory where the image files will be
+ *      written to. Default is the same directory as source.
+ * @return {Promise}
+ */
+function processImageFile(renders, sourceFile, targetDir=null) {
+    return new Promise((resolve, reject) => {
+        //// Parse the file path
+        
+        var parsed = path.parse(sourceFile);
+        // path to the source file
+        var sourceDir = parsed.dir;
+        // filename with no directory or extension
+        var baseName = parsed.name;
+        // file extension
+        var extension = parsed.ext;
+        // path to the target file
+        if (!targetDir) {
+            targetDir = sourceDir;
+        }
+        
+        //// Process image
+        async.series([
+            
+            // Ensure image has correct orientation based on EXIF data and save
+            // to target directory.
+            (next) => {
+                var targetFile = path.join(targetDir, baseName + extension);
+                // ImageMagick
+                child_process.exec(
+                    `convert "${sourceFile}" -auto-orient "${targetFile}"`,
+                    (err, stdout, stderr) => {
+                        if (err) {
+                            console.error(
+                                'ImageMagick error while processing ' + targetFile,
+                                { stdout, stderr, err }
+                            );
+                            next(err);
+                        }
+                        else {
+                            next();
+                        }
+                    }
+                );
+            },
+            
+            // Create additional renders and save to target directory.
+            (next) => {
+                async.eachSeries(
+                    renders, 
+                    (renderOpts, renderDone) => {
+                        // '-quality' option applicable for JPEG images
+                        var qualityOpt = '';
+                        if (extension.match(/jpe?g$/i) && renderOpts.quality) {
+                            qualityOpt = '-quality ' + renderOpts.quality;
+                        }
+                        
+                        // Append the name for this render
+                        var targetFile = path.join(targetDir, baseName + renderOpts.name + extension);
+                        
+                        // ImageMagick
+                        child_process.exec(
+                            `convert "${sourceFile}" -auto-orient -resize ${renderOpts.width}x${renderOpts.height} ${qualityOpt} "${targetFile}"`,
+                            (err, stdout, stderr) => {
+                                if (err) {
+                                    console.error(
+                                        'ImageMagick error while processing ' + targetFile, 
+                                        { renderOpts, stdout, stderr, err }
+                                    );
+                                    renderDone(err);
+                                }
+                                else {
+                                    renderDone();
+                                }
+                            }
+                        );
+                    }, 
+                    (err) => {
+                        if (err) next(err);
+                        else next();
+                    }
+                )
+            },
+            
+        ], (err) => {
+            if (err) reject(err);
+            else resolve();
+        });
+    });
+}
+
+
 /*
  * @function renderFile
- *
+ * 
+ * THIS WAS USED PREVIOUSLY INSTEAD OF processImageFile()
+ * 
  * recursively process a list of Render Commands on a given
  * file.
  *
