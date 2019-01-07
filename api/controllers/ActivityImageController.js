@@ -1189,25 +1189,25 @@ console.error(err);
                     }
                 }, 20000);
                 
+                // Process image and save to target directory
                 var listRenders = getRenderList();
                 processImageFile(listRenders, tempFile, targetPath)
                 .then(() => {
-                    
                     clearInterval(interval);
                     isFinished = true;
-                    if (err) {
-                        ADCore.error.log("FCFActivities:ActivityImageController:upload() Error Rendering File.", { error:err, newFile:newFile });  
-                    } 
-                    else {
-                       res.AD.success({ 
-                           path: path.join(targetPathWeb, imageName), 
-                           name: imageName 
-                       }, null, true);
-                    }
-                    
+                    res.AD.success({ 
+                        path: path.join(targetPathWeb, imageName), 
+                        name: imageName 
+                    }, null, true);
                 })
                 .catch((err) => {
-                    console.log('Image processing error', err);
+                    ADCore.error.log(
+                        "FCFActivities:ActivityImageController:upload() Error Rendering File.", 
+                        { 
+                            error: err, 
+                            newFile: tempFile 
+                        }
+                    );  
                     clearInterval(interval);
                     isFinished = true;
                     res.AD.error(err, 500);
