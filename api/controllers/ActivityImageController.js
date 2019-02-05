@@ -1251,7 +1251,7 @@ console.error(err);
             }
 
 
-            // only find Activity images for this person.
+            // default: find Activity images uploaded by person.
             filter.uploadedBy = data.person;
 
 
@@ -1259,6 +1259,26 @@ console.error(err);
             var relatedTeams = [];
 
             async.series([
+
+                // find all the images the current person is tagged in
+                (next)=>{
+
+                    FCFPerson.findOne({IDPerson:data.person})
+                    .populate('taggedInImages')
+                    .then((person)=>{
+
+                        // if tagged in other images, then return all those
+                        var taggedIDs = (person.taggedInImages || []).map(i=>{return i.id});
+                        if (taggedIDs.length > 0) {
+                            filter.id = taggedIDs;
+                            delete filter.uploadedBy;
+                        } 
+                        
+                        next();
+                    })
+                    .catch(next);
+                },
+
 
                 // find the Activities
                 (next)=>{
