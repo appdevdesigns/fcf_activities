@@ -278,7 +278,7 @@ steal(
 						this.dom.inputCaptionCounter.html('240');
 						this.dom.inputDate.data("DateTimePicker").date(null);
 						this.dom.inputTags.selectivity('value', []);
-						this.dom.peopleObjects.find('li.fcf-activity-people-objects').show();
+						// this.dom.peopleObjects.find('li.fcf-activity-people-objects').show();
 
 
 						// refrence values are empty:
@@ -346,15 +346,23 @@ steal(
 						var values = this.formValues();
 
 						if (values.image == '') {
-							errors.push('An Image is Required.');
+							errors.push('An image is required.');
 						}
 
 						if (values.caption == '') {
-							errors.push('A caption is Required.');
+							errors.push('A caption is required.');
+						}
+
+						if (values.caption.length > 240) {
+							errors.push('Caption is too long.');
 						}
 
 						if (values.date == '') {
-							errors.push('A date is Required.');
+							errors.push('A date is required.');
+						}
+
+						if (values.caption_govt == '') {
+							errors.push('A location is required.');
 						}
 
 						if (values.taggedPeople.length == 0) {
@@ -407,12 +415,15 @@ steal(
 						this.values.date = image.date;
 
 						this.dom.inputTags.selectivity('value', []);
-						this.dom.peopleObjects.find('li.fcf-activity-people-objects').show();
+						// this.dom.peopleObjects.find('li.fcf-activity-people-objects').show();
 
+						var peps = [];
 						image.taggedPeople.forEach(function(personID) {
-							self.dom.peopleObjects.find('[data-person-id="' + personID + '"]').click();
+							peps.push(personID);
+							// self.dom.peopleObjects.find('[data-person-id="' + personID + '"]').click();
 						});
 						this.values.taggedPeople = image.taggedPeople;
+						this.dom.inputTags.selectivity('value', peps);
 
 
 						var id = this.selectedActivity.getID ? this.selectedActivity.getID() : this.selectedActivity.id;
@@ -698,8 +709,8 @@ steal(
 
 						// register template as :  'FCFActivities_ActivityReport_ActivityTaggedPeople'
 						//  NOTE:  DON'T USE '.' as seperators here!!!  -> can.ejs thinks they are file names then... doh!
-						var activityListTaggedPeopleTemplate = this.domToTemplate(this.element.find('.fcf-activity-tag-list'));
-						can.view.ejs('FCFActivities_ActivityReport_ActivityTaggedPeople', activityListTaggedPeopleTemplate);
+						// var activityListTaggedPeopleTemplate = this.domToTemplate(this.element.find('.fcf-activity-tag-list'));
+						// can.view.ejs('FCFActivities_ActivityReport_ActivityTaggedPeople', activityListTaggedPeopleTemplate);
 
 						// remove the template from the DOM
 						this.element.find('.fcf-activity-tag-list').html(' ');
@@ -746,10 +757,10 @@ steal(
 						////
 						//// Create our Objective entry Template
 						////
-						var template = this.domToTemplate(this.element.find('.fcf-activitiy-people-list'));
-						template = AD.util.string.replaceAll(template, 'src=""', 'src="<%= person.attr(\'avatar\') %>"');
+						// var template = this.domToTemplate(this.element.find('.fcf-activitiy-people-list'));
+						// template = AD.util.string.replaceAll(template, 'src=""', 'src="<%= person.attr(\'avatar\') %>"');
 						// template = AD.util.string.replaceAll(template, '[INSERT_TR]', ['%> ', ' </tr>', ' <tr> ', '<% \n' ].join('\n'))
-						can.view.ejs('FCFActivities_ActivityReport_PersonList', template);
+						// can.view.ejs('FCFActivities_ActivityReport_PersonList', template);
 
 
 
@@ -763,7 +774,7 @@ steal(
 						this.dom.titleTeam = this.element.find('.fcf-activity-team-name');
 						this.dom.listActivities = this.element.find('.fcf-activity-report-activities');
 						this.dom.listActivities.children().remove();
-						this.dom.listActivities.css("height", "600px");
+						this.dom.listActivities.css("height", this.element.find('#formColumn').outerHeight() + "px");
 
 
 						// Image List Column:
@@ -775,7 +786,7 @@ steal(
 
 						this.dom.listImages = this.element.find('.fcf-activity-report-activity-images');
 						this.dom.listImages.children().remove();
-						this.dom.listImages.css('height', "400px");
+						this.dom.listImages.css('height', (this.element.find('#formColumn').outerHeight + 50) + "px");
 
 						// Image Form
 						AD.comm.csrf()
@@ -805,12 +816,8 @@ var dzImage = _this.dom.dropzone.find('img');
 
 									// if the height is > our area (then a vertical scrollbar will appear)
 									if (parseInt(dzImage.css('height')) > height) {
-
-										var width = parseInt(_this.dom.dropzone.css('width'));
-
-										// let's reduce the width to take into account the new scroll bars that will appear
-										width = width - (AD.util.uiScrollbarSize().width + 4);
-										dzImage.css('width', width);
+										dzImage.css('height', height);
+										dzImage.css('width', 'auto');
 									}
 								})
 								// _this.obj.ImageUploaded.on('load', function() {
@@ -839,8 +846,8 @@ var dzImage = _this.dom.dropzone.find('img');
 									_this.dom.dropzone.find('.dz-message').hide();
 
 									// place the image in the display area
-									var width = parseInt(_this.dom.dropzone.css('width'));
-dzImage.css('width', width).prop('src', response.data.path).show();
+									var height = parseInt(_this.dom.dropzone.css('height'));
+									dzImage.css('height', height).css('width', 'auto').prop('src', response.data.path).show();
 									// _this.obj.ImageUploaded.clear().show();
 									// _this.obj.ImageUploaded.loadURL(response.data.path);
 
@@ -916,7 +923,7 @@ dzImage.prop('src', '').hide();
 						this.dom.inputCaptionCounter = this.dom.imageForm.find('#charCount');
 						this.dom.inputDate = this.dom.imageForm.find('#image-date');
 						this.dom.inputTags = this.element.find('#image-tags');
-						this.dom.peopleObjects = this.element.find('.fcf-activitiy-people-list');
+						// this.dom.peopleObjects = this.element.find('.fcf-activitiy-people-list');
 						// this.dom.peopleObjects.css('height', '200px');
 
 						var calendarOptions = {
@@ -958,14 +965,14 @@ dzImage.prop('src', '').hide();
 						this.dom.resize.tagsCurrHeight = 0; //this.dom.resize.tags.outerHeight(true);
 						this.dom.resize.tagsBaseHeight = 0;
 						this.dom.resize.tagsTotalHeight = 0;
-						this.dom.resize.profileScroller = this.element.find("#profilelist-scroll");
+						// this.dom.resize.profileScroller = this.element.find("#profilelist-scroll");
 
 						// this.dom.inputTags.find('.selectivity-multiple-input-container').css('height', '42px'); // attempt to lock this widget into a fixed height
 
 
 						// var emptyList = new can.List([]);
 						// this.dom.peopleObjects.html( can.view('FCFActivities_ActivityReport_PersonList', { people:emptyList } ));
-						this.dom.peopleObjects.children().remove();
+						// this.dom.peopleObjects.children().remove();
 
 
 						// attach the buttons:
@@ -999,48 +1006,152 @@ dzImage.prop('src', '').hide();
 					 */
 					setTeam: function(team) {
 						var self = this;
+						var myTeam = [];
 
 						this.selectedTeam = team;
+						
+						async.series([
 
-						// request the people associated with this team:
-						AD.comm.service.get({ url: '/fcf_activities/teammembers', params: { teamID: team.getID() } })
-							.fail(function(err) {
-								console.error('problem looking up teammembers: teamID:' + team.getID());
-							})
-							.then(function(res) {
-								var data = [];
-								var list = res.data || res;
+			                // step1 get all the team members
+			                function(next) {
 
+								// request the people associated with this team:
+								AD.comm.service.get({ url: '/fcf_activities/teammembers', params: { projectID: team.ProjectOwner } })
+									.fail(function(err) {
+										console.error('problem looking up teammembers: Project:' + team.ProjectOwner);
+			                            next(err);
+									})
+									.then(function(res) {
+										var list = res.data || res;
 
-								// update our list of teammates to this set of people
-								self.listTeammates = new can.List(list);
+										// update our list of teammates to this set of people
+										self.listTeammates = new can.List(list);
 
-								//// Update the Tag Selector
+										//// Update the Tag Selector
 
-								// convert returned list into [ {id:IDPerson, text:'PersonName'}]
-								list.forEach(function(person) {
+										// convert returned list into [ {id:IDPerson, text:'PersonName'}]
+										list.forEach(function(person) {
 
-									data.push({
-										id: person.IDPerson,
-										text: person.display_name
-									});
-								})
+											myTeam.push({
+												id: person.IDPerson,
+												text: person.display_name
+											});
+										})
+										
+										next();
 
-								// initialize the selectivity tag selector with converted list
-								var label = 
-								self.dom.inputTags.selectivity({
-									items: data,
-									multiple: true,
-									placeholder: self.labelPeopleInPhoto
-								});
+									})
+									
+							},
 
+			                // step 2: now look up all volunteers:
+			                function(next) {
+								// request the people associated with this team:
+								AD.comm.service.get({ url: '/fcf_activities/teammembers', params: { teamID: 0 } })
+									.fail(function(err) {
+										console.error('problem looking up all volunteers');
+										next(err);
+									})
+									.then(function(res) {
+										var allVols = [];
+										var list = res.data || res;
+										var teamMemberIds = [];
 
+										//// Update the Tag Selector
+										
+										// build a lookup array of current team members IDs
+										myTeam.forEach(function (el) {
+											teamMemberIds.push(el.id);
+										});
+										
+										// convert returned list into [ {id:IDPerson, text:'PersonName'}]
+										list.forEach(function(person) {
+											// Create alphabetical list of volunteers and remove team members because they are already listed
+											// if (teamMemberIds.indexOf(person.IDPerson) == -1) 
+												allVols.push({
+													id: person.IDPerson,
+													text: person.display_name
+												});
+										});
+										
+										var group = {};
+										for(var y = 0; y < allVols.length-1; y++) {
+											if(allVols[y].text.toLowerCase() > allVols[y+1].text.toLowerCase()) {
+												var item = allVols[y+1];
+												var name = item.text;
+												var nameArray = name.split(" ");
+												var lastName = nameArray[nameArray.length - 1];
+												var alpha = lastName.charAt(0);
+												if (!group.hasOwnProperty(alpha))
+													group[alpha] = [];
 
-								
+												group[alpha].push(item);
+											}
+										}
+										
+										console.log(group);
+										
+										var groupedVols = [];
+										for (var key in group) {
+											groupedVols.push(
+												{
+													id: key,
+													text: key,
+													submenu: {
+														items: group[key]
+													}
+												}
+											);
+										}
 
-								self.dom.peopleObjects.children().remove();
-								self.dom.peopleObjects.append(can.view('FCFActivities_ActivityReport_PersonList', { people: self.listTeammates }));
-							})
+										var options = [
+											{
+												id: "MyTeam",
+												text: "My Project's Volunteers",
+												submenu: {
+													items: myTeam
+												}
+											},
+											{
+												id: "AllVols",
+												text: "All FCF Volunteers",
+												submenu: {
+													items: groupedVols
+												}
+											}
+										];
+										// initialize the selectivity tag selector with converted list
+										var label = 
+										self.dom.inputTags.selectivity({
+											items: options,
+											multiple: true,
+											placeholder: self.labelPeopleInPhoto,
+											positionDropdown: function(dropdownEl, selectEl) {
+												dropdownEl.style.width = selectEl.offsetWidth/3 + "px";
+												var topPos = 0;
+												var el = selectEl.offsetParent;
+												while (el) {
+													topPos = topPos + el.offsetTop;
+													el = el.offsetParent;
+												}
+												dropdownEl.style.top = (selectEl.clientHeight + selectEl.offsetTop + topPos - window.scrollY) + "px";
+												var contain = document.getElementsByClassName("selectivity-results-container");
+												for (var i = 0; i < contain.length; i++) {
+													contain[i].style.maxHeight = "18em";
+												}
+											}
+										});
+
+									})
+							}
+						], function(err, results){
+
+							if (err) {
+								console.log('... received error!:', err);
+							}
+
+						})
+						
 					},
 
 
@@ -1121,6 +1232,10 @@ dzImage.prop('src', '').hide();
 										next(err);
 									})
 									.then(function(list) {
+										list.forEach(function(item) {
+											item.startDate = self.toDate(item.date_start);
+											item.endDate = self.toDate(item.date_end);
+										});
 										var listActivities = new can.List(list);
 										self.listActivities = listActivities;
 										next();
@@ -1264,9 +1379,9 @@ dzImage.prop('src', '').hide();
 									var people = listActivityTags[actID]
 
 									// update Tagged People for this Activity
-									var pTags = self.element.find('.fcf-activity-tag-list[activityID=' + actID + ']')
-									pTags.html(' ');  // clear the list
-									pTags.append(can.view('FCFActivities_ActivityReport_ActivityTaggedPeople', { taggedPeople: people, teammates: self.listTeammates, whoami: self.whoami }))
+									// var pTags = self.element.find('.fcf-activity-tag-list[activityID=' + actID + ']')
+									// pTags.html(' ');  // clear the list
+									// pTags.append(can.view('FCFActivities_ActivityReport_ActivityTaggedPeople', { taggedPeople: people, teammates: self.listTeammates, whoami: self.whoami }))
 
 
 									// decide if we should show the TAG for this activity
@@ -1320,6 +1435,9 @@ dzImage.prop('src', '').hide();
 					resize: function(height) {
 
 						console.log('////// resize! : ' + height);
+						
+						this.dom.listActivities.css("height", (this.element.find('#formColumn').outerHeight() + 50) + "px");
+						this.dom.listImages.css('height', this.element.find('#formColumn').outerHeight() + "px");
 
 						//             // we have an outer <div> with 20px of spacing added:
 						//             height = height - 20; // todo: get this from the <div>
@@ -1367,7 +1485,8 @@ dzImage.prop('src', '').hide();
 						}
 
 						// our total Height for the section is : base tag Height + scaled size of profile
-						this.dom.resize.tagsTotalHeight = this.dom.resize.profileScroller.outerHeight(true) + this.dom.resize.tagsBaseHeight;
+						// this.dom.resize.tagsTotalHeight = this.dom.resize.profileScroller.outerHeight(true) + this.dom.resize.tagsBaseHeight;
+						this.dom.resize.tagsTotalHeight = this.dom.resize.tagsBaseHeight;
 						this.dom.resize.tagsCurrHeight = 0;  // <-- force a readjust
 						this.tagsAdjustHeight();
 					},
@@ -1400,12 +1519,12 @@ dzImage.prop('src', '').hide();
 						if (tHeight != this.dom.resize.tagsCurrHeight) {
 
 							var adjustedHeight = this.dom.resize.tagsTotalHeight - tHeight;
-							if (adjustedHeight > 50) {
-								this.dom.resize.profileScroller.css('height', adjustedHeight + 'px')
-								this.dom.resize.profileScroller.parent().show();
-							} else {
-								this.dom.resize.profileScroller.parent().hide();
-							}
+							// if (adjustedHeight > 50) {
+							// 	this.dom.resize.profileScroller.css('height', adjustedHeight + 'px')
+							// 	this.dom.resize.profileScroller.parent().show();
+							// } else {
+							// 	this.dom.resize.profileScroller.parent().hide();
+							// }
 
 							this.dom.resize.tagsCurrHeight = tHeight;
 
@@ -1434,10 +1553,10 @@ dzImage.prop('src', '').hide();
 						if (opt.added) {
 
 							// find the related person in the PeopleObject list and hide them.
-							this.dom.peopleObjects.find('[data-person-id="' + opt.added.id + '"]').hide();
+							// this.dom.peopleObjects.find('[data-person-id="' + opt.added.id + '"]').hide();
 
 						} else if (opt.removed) {
-							this.dom.peopleObjects.find('[data-person-id="' + opt.removed.id + '"]').show();
+							// this.dom.peopleObjects.find('[data-person-id="' + opt.removed.id + '"]').show();
 						}
 
 
@@ -1501,6 +1620,7 @@ dzImage.prop('src', '').hide();
 						}
 
 						var parts = date.split('T');
+						parts[0] = parts[0].replace(/-/g, "/");
 						return parts[0];
 					},
 
@@ -1704,12 +1824,14 @@ dzImage.prop('src', '').hide();
 										.then(function() {
 
 											// only continue if we saved properly.
+											self.selectImageRow();
 											self.clearForm()
 										})
 								}
 							})
 
 						} else {
+							self.selectImageRow();
 							self.clearForm()
 						}
 

@@ -247,8 +247,9 @@ module.exports = {
         var langCode = ADCore.user.current(req).getLanguageCode();
 
         var teamID = req.param('teamID');
+        var projectID = req.param('projectID');
 
-        if (!teamID) {
+        if (!teamID && !projectID) {
 
             // if no team provided, just retun empty []
             ADCore.comm.success(res, []);
@@ -263,25 +264,67 @@ module.exports = {
 
                 // step1 get all the people references
                 function(next) {
+                    
+                    // return all active volunteers if teamID is 0
+                    if (teamID == 0) {
+                        FCFMinistryTeamMember.find({codeServiceStatus:"S"})
+                        .then(function(list){
 
-                    FCFMinistryTeamMember.find({IDMinistry:teamID})
-                    .then(function(list){
+                            if (list) {
 
-                        if (list) {
+                                list.forEach(function(entry){
+                                    if (entry.IDPerson) {
+                                        peopleIDs.push(entry.IDPerson);
+                                    }
+                                })
+                            }
 
-                            list.forEach(function(entry){
-                                if (entry.IDPerson) {
-                                    peopleIDs.push(entry.IDPerson);
-                                }
-                            })
-                        }
+                            next();
+                        })
+                        .catch(function(err){
+                            AD.log(err);
+                            next(err);
+                        })                        
+                    } else if (projectID) {
+                        FCFMinistryTeamMember.find({IDProject:projectID, codeServiceStatus:"S"})
+                        .then(function(list){
 
-                        next();
-                    })
-                    .catch(function(err){
-                        AD.log(err);
-                        next(err);
-                    })
+                            if (list) {
+
+                                list.forEach(function(entry){
+                                    if (entry.IDPerson) {
+                                        peopleIDs.push(entry.IDPerson);
+                                    }
+                                })
+                            }
+
+                            next();
+                        })
+                        .catch(function(err){
+                            AD.log(err);
+                            next(err);
+                        })
+                    } else if (teamID) {
+                        FCFMinistryTeamMember.find({IDMinistry:teamID, codeServiceStatus:"S"})
+                        .then(function(list){
+
+                            if (list) {
+
+                                list.forEach(function(entry){
+                                    if (entry.IDPerson) {
+                                        peopleIDs.push(entry.IDPerson);
+                                    }
+                                })
+                            }
+
+                            next();
+                        })
+                        .catch(function(err){
+                            AD.log(err);
+                            next(err);
+                        })
+                    }
+
 
                 },  
 
@@ -290,7 +333,7 @@ module.exports = {
 
                     AD.log('... looking up people:'+ peopleIDs );
 
-                    FCFPerson.find({IDPerson:peopleIDs})
+                    FCFPerson.find({IDPerson:peopleIDs}).sort('NameLastEng ASC')
                     .then(function(list){
 
                         list.forEach(function(person){
