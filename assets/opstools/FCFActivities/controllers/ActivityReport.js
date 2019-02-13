@@ -86,6 +86,7 @@ steal(
 						this.listImages = null;         // the list of all images related to the selectedActivity
 
 						this.listTeammates = [];
+						this.listProjectVols = [];
 
 						this.whoami = null;             // the person obj of the user
 
@@ -1007,6 +1008,7 @@ dzImage.prop('src', '').hide();
 					setTeam: function(team) {
 						var self = this;
 						var myTeam = [];
+						var myProject = [];
 
 						this.selectedTeam = team;
 						
@@ -1016,9 +1018,9 @@ dzImage.prop('src', '').hide();
 			                function(next) {
 
 								// request the people associated with this team:
-								AD.comm.service.get({ url: '/fcf_activities/teammembers', params: { projectID: team.ProjectOwner } })
+		                        AD.comm.service.get({ url: '/fcf_activities/teammembers', params: { teamID: team.getID() } })
 									.fail(function(err) {
-										console.error('problem looking up teammembers: Project:' + team.ProjectOwner);
+										console.error('problem looking up teammembers: team id ' + team.getID());
 			                            next(err);
 									})
 									.then(function(res) {
@@ -1043,8 +1045,71 @@ dzImage.prop('src', '').hide();
 									})
 									
 							},
+							
+							// step2 get all the project members
+			                function(next) {
 
-			                // step 2: now look up all volunteers:
+								// request the people associated with this team:
+								AD.comm.service.get({ url: '/fcf_activities/teammembers', params: { projectID: team.ProjectOwner } })
+									.fail(function(err) {
+										console.error('problem looking up teammembers: Project:' + team.ProjectOwner);
+			                            next(err);
+									})
+									.then(function(res) {
+										var list = res.data || res;
+
+										// update our list of teammates to this set of people
+										self.listProjectVols = new can.List(list);
+
+										//// Update the Tag Selector
+
+										// convert returned list into [ {id:IDPerson, text:'PersonName'}]
+										list.forEach(function(person) {
+
+											myProject.push({
+												id: person.IDPerson,
+												text: person.display_name
+											});
+										})
+										
+										if (myProject.length > 10) {
+											var group = {};
+											for(var y = 0; y < myProject.length-1; y++) {
+												if(myProject[y].text.toLowerCase() > myProject[y+1].text.toLowerCase()) {
+													var item = myProject[y+1];
+													var name = item.text;
+													var nameArray = name.split(" ");
+													var lastName = nameArray[nameArray.length - 1];
+													var alpha = lastName.charAt(0);
+													if (!group.hasOwnProperty(alpha))
+														group[alpha] = [];
+
+													group[alpha].push(item);
+												}
+											}
+											
+											var groupedVols = [];
+											for (var key in group) {
+												groupedVols.push(
+													{
+														id: key,
+														text: key,
+														submenu: {
+															items: group[key]
+														}
+													}
+												);
+											}
+											myProject = groupedVols;
+										}
+										
+										next();
+
+									})
+									
+							},
+
+			                // step 3: now look up all volunteers:
 			                function(next) {
 								// request the people associated with this team:
 								AD.comm.service.get({ url: '/fcf_activities/teammembers', params: { teamID: 0 } })
@@ -1059,19 +1124,13 @@ dzImage.prop('src', '').hide();
 
 										//// Update the Tag Selector
 										
-										// build a lookup array of current team members IDs
-										myTeam.forEach(function (el) {
-											teamMemberIds.push(el.id);
-										});
-										
 										// convert returned list into [ {id:IDPerson, text:'PersonName'}]
 										list.forEach(function(person) {
 											// Create alphabetical list of volunteers and remove team members because they are already listed
-											// if (teamMemberIds.indexOf(person.IDPerson) == -1) 
-												allVols.push({
-													id: person.IDPerson,
-													text: person.display_name
-												});
+											allVols.push({
+												id: person.IDPerson,
+												text: person.display_name
+											});
 										});
 										
 										var group = {};
@@ -1089,8 +1148,6 @@ dzImage.prop('src', '').hide();
 											}
 										}
 										
-										console.log(group);
-										
 										var groupedVols = [];
 										for (var key in group) {
 											groupedVols.push(
@@ -1107,9 +1164,16 @@ dzImage.prop('src', '').hide();
 										var options = [
 											{
 												id: "MyTeam",
-												text: "My Project's Volunteers",
+												text: "My Team's Volunteers",
 												submenu: {
 													items: myTeam
+												}
+											},
+											{
+												id: "MyProject",
+												text: "My Project's Volunteers",
+												submenu: {
+													items: myProject
 												}
 											},
 											{
