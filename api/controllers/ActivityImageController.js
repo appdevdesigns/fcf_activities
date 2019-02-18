@@ -1697,8 +1697,7 @@ console.error(err);
 
                 // limit to found person
 
-                FCFMinistryTeamMember.find({IDPerson:PersonID})
-                // FCFMinistryTeamMember.find({IDPerson:PersonID, codeServiceStatus:"S"})
+                FCFMinistryTeamMember.find({IDPerson:PersonID, codeServiceStatus:"S"})
                 .then((list)=>{
 
                     // if "null" is sent as a filter value
@@ -1738,8 +1737,7 @@ console.error(err);
             (next)=>{
 
                 // limit to found person
-                FCFMinistryTeamMember.find({IDPerson:PersonID})
-                // FCFMinistryTeamMember.find({IDPerson:PersonID, codeServiceStatus:"S"})
+                FCFMinistryTeamMember.find({IDPerson:PersonID, codeServiceStatus:"S"})
                 .then((list)=>{
 
                     // if "null" is sent as a filter value
