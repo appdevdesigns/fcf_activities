@@ -153,6 +153,50 @@ module.exports = function(cb) {
             }
 
 
+        } else if (data.status == 'rejected') {
+            var updates = data.data;
+            if (updates.length > 0) {
+                var updatedValues = JSON.parse(updates);
+                FCFActivityImages.findOne({id:data.reference.id})
+                    .populate('translations')
+                    .populate('taggedPeople')
+                    .then(function(image) {
+                
+                        Multilingual.model.sync({
+                            model: image,
+                            data: updatedValues
+                        })
+                        .fail(function(err) {
+
+						})
+						.done(function(updatedActivity) {
+
+							FCFCommonRejectionHandler({
+								Model: FCFActivityImages,
+								id: data.reference.id,
+								pops: ["uploadedBy", "translations"],
+								transType: "image",
+								menu: data.menu
+							});
+
+						});
+
+                        return null;
+
+                    })
+                    
+                    
+            } else {
+
+                // no values to update, so pass along translation Request
+                FCFCommonRejectionHandler({
+                    Model: FCFActivityImages,
+                    id: data.reference.id,
+                    pops: ["uploadedBy", "translations"],
+                    transType: "image",
+                    menu: data.menu
+                });
+            }
 
         } else {
 
@@ -461,6 +505,64 @@ function FCFCommonApprovalHandler(options) {
 // AD.log('... model after .save():', model);
 					// Now send this off to be translated:
 					FCFActivities.translations[transType](model);
+					return null;
+
+				})
+
+        } else {
+
+			// should let someone know about this error!
+            ADCore.error.log('Error looking up FCFActivity:', { id: data.reference.id });
+
+        }
+
+        return null;
+    })
+}
+
+function FCFCommonRejectionHandler(options) {
+    var Model = options.Model;
+    var id = options.id;
+    var pops = options.pops || [];
+    var transType = options.transType;
+
+// console.log('FCFCommonapprovalhandler: options:', options);
+
+    // find the model
+    var def = Model.findOne({ id:id });
+
+    // populate all the necessary fields
+    pops.forEach(function(key) {
+        def.populate(key);
+    });
+
+    def.then(function(model) {
+
+        if (model) {
+
+			// #hack:  Sails v0.12 changes
+			// removes existing populations from a model upon .save()
+			var oldValues = {};
+			pops.forEach(function(key){
+				oldValues[key] = model[key];
+			})
+
+			// AD.log('... found it');
+            // set status to 'approved'
+            model.status = 'denied';
+            model.save()
+				.then(function(updatedModel) {
+
+
+					// Sails v0.12 update changed behavior of .save()
+					// it now no longer keeps populations.
+					// do another lookup:
+					for (var v in oldValues) {
+						model[v] = oldValues[v];
+					}
+
+					// Add menu info
+					model.menu = options.menu;
 					return null;
 
 				})

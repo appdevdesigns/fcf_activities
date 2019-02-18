@@ -380,8 +380,14 @@ msgstr "New/Update Activity"
 #. path: opstool-FCFActivities
 #. code: en
 #. key: fcf.assignment.searchForTeam
-msgid "search"
-msgstr "search"
+msgid "Search for Team"
+msgstr "Search for Team"
+
+#. path: opstool-FCFActivities
+#. code: en
+#. key: fcf.assignment.searchForActivity
+msgid "Search for Activity"
+msgstr "Search for Activity"
 
 #. path: opstool-FCFActivities
 #. code: en

@@ -476,6 +476,14 @@ steal(
 // console.error('... obj:', obj);
 
 										self.listImages.unshift(obj);
+										
+										if (obj.caption.length > 80) {
+											obj.captionTruncated = obj.caption.substring(0,80);
+											obj.captionTruncated = obj.captionTruncated.substring(0, Math.min(obj.captionTruncated.length, obj.captionTruncated.lastIndexOf(" ")))+'...';
+										} else {
+											obj.captionTruncated = obj.caption;
+										}
+
 										// self.imageRotate();
 										self.clearForm();
 
@@ -496,6 +504,7 @@ steal(
 
 										self.refreshPeopleTaggedInActivities(valuesObj.activity);
 										self.refreshPeopleTaggedInImages(obj);
+										self.refreshTruncatedCaption(obj);
 										dfd.resolve();
 									})
 
@@ -517,6 +526,12 @@ steal(
 
 										console.log(' ... returnedData:', data);
 										// we should get the actual image/path back:
+										if (data.caption.length > 80) {
+											data.captionTruncated = data.caption.substring(0,80);
+											data.captionTruncated = data.captionTruncated.substring(0, Math.min(data.captionTruncated.length, data.captionTruncated.lastIndexOf(" ")))+'...';
+										} else {
+											data.captionTruncated = data.caption;
+										}
 										self.currentlyEditingImage.attr('image', data.image);
 										self.currentlyEditingImage.attr('taggedPeople', data.taggedPeople);
 
@@ -540,6 +555,7 @@ steal(
 
 										self.refreshPeopleTaggedInActivities(valuesObj.activity);
 										self.refreshPeopleTaggedInImages(data);
+										self.refreshTruncatedCaption(data);
 										dfd.resolve();
 									})
 
@@ -1072,149 +1088,56 @@ dzImage.prop('src', '').hide();
 											});
 										})
 										
-										if (myProject.length > 10) {
-											var group = {};
-											for(var y = 0; y < myProject.length-1; y++) {
-												if(myProject[y].text.toLowerCase() > myProject[y+1].text.toLowerCase()) {
-													var item = myProject[y+1];
-													var name = item.text;
-													var nameArray = name.split(" ");
-													var lastName = nameArray[nameArray.length - 1];
-													var alpha = lastName.charAt(0);
-													if (!group.hasOwnProperty(alpha))
-														group[alpha] = [];
-
-													group[alpha].push(item);
-												}
-											}
-											
-											var groupedVols = [];
-											for (var key in group) {
-												groupedVols.push(
-													{
-														id: key,
-														text: key,
-														submenu: {
-															items: group[key]
-														}
-													}
-												);
-											}
-											myProject = groupedVols;
-										}
-										
 										next();
 
 									})
 									
 							},
 
-			                // step 3: now look up all volunteers:
+			                // step 3: now build the dom:
 			                function(next) {
-								// request the people associated with this team:
-								AD.comm.service.get({ url: '/fcf_activities/teammembers', params: { teamID: 0 } })
-									.fail(function(err) {
-										console.error('problem looking up all volunteers');
-										next(err);
-									})
-									.then(function(res) {
-										var allVols = [];
-										var list = res.data || res;
-										var teamMemberIds = [];
 
-										//// Update the Tag Selector
-										
-										// convert returned list into [ {id:IDPerson, text:'PersonName'}]
-										list.forEach(function(person) {
-											// Create alphabetical list of volunteers and remove team members because they are already listed
-											allVols.push({
-												id: person.IDPerson,
-												text: person.display_name
-											});
-										});
-										
-										var group = {};
-										for(var y = 0; y < allVols.length-1; y++) {
-											if(allVols[y].text.toLowerCase() > allVols[y+1].text.toLowerCase()) {
-												var item = allVols[y+1];
-												var name = item.text;
-												var nameArray = name.split(" ");
-												var lastName = nameArray[nameArray.length - 1];
-												var alpha = lastName.charAt(0);
-												if (!group.hasOwnProperty(alpha))
-													group[alpha] = [];
-
-												group[alpha].push(item);
-											}
+								var options = [
+									{
+										id: "MyTeam",
+										text: "My Team's Volunteers",
+										submenu: {
+											items: myTeam
 										}
-										
-										var groupedVols = [];
-										for (var key in group) {
-											groupedVols.push(
-												{
-													id: key,
-													text: key,
-													submenu: {
-														items: group[key]
-													}
-												}
-											);
+									},
+									{
+										id: "MyProject",
+										text: "My Project's Volunteers",
+										submenu: {
+											items: myProject
 										}
-
-										var options = [
-											{
-												id: "MyTeam",
-												text: "My Team's Volunteers",
-												submenu: {
-													items: myTeam
-												}
-											},
-											{
-												id: "MyProject",
-												text: "My Project's Volunteers",
-												submenu: {
-													items: myProject
-												}
-											},
-											{
-												id: "AllVols",
-												text: "All FCF Volunteers",
-												submenu: {
-													items: groupedVols
-												}
-											}
-										];
-										// initialize the selectivity tag selector with converted list
-										var label = 
-										self.dom.inputTags.selectivity({
-											items: options,
-											multiple: true,
-											placeholder: self.labelPeopleInPhoto,
-											positionDropdown: function(dropdownEl, selectEl) {
-												dropdownEl.style.width = selectEl.offsetWidth/3 + "px";
-												var topPos = 0;
-												var el = selectEl.offsetParent;
-												while (el) {
-													topPos = topPos + el.offsetTop;
-													el = el.offsetParent;
-												}
-												dropdownEl.style.top = (selectEl.clientHeight + selectEl.offsetTop + topPos - window.scrollY) + "px";
-												var contain = document.getElementsByClassName("selectivity-results-container");
-												for (var i = 0; i < contain.length; i++) {
-													contain[i].style.maxHeight = "18em";
-												}
-											}
-										});
-
-									})
+									}
+								];
+								// initialize the selectivity tag selector with converted list
+								var label = 
+								self.dom.inputTags.selectivity({
+									items: options,
+									multiple: true,
+									placeholder: self.labelPeopleInPhoto,
+									positionDropdown: function(dropdownEl, selectEl) {
+										dropdownEl.style.width = selectEl.offsetWidth/3 + "px";
+										var topPos = 0;
+										var el = selectEl.offsetParent;
+										while (el) {
+											topPos = topPos + el.offsetTop;
+											el = el.offsetParent;
+										}
+										dropdownEl.style.top = (selectEl.clientHeight + selectEl.offsetTop + topPos - window.scrollY) + "px";
+										var contain = document.getElementsByClassName("selectivity-results-container");
+										for (var i = 0; i < contain.length; i++) {
+											contain[i].style.maxHeight = "18em";
+										}
+									}
+								});
+							
 							}
-						], function(err, results){
-
-							if (err) {
-								console.log('... received error!:', err);
-							}
-
-						})
+						
+						]);
 						
 					},
 
@@ -1296,10 +1219,21 @@ dzImage.prop('src', '').hide();
 										next(err);
 									})
 									.then(function(list) {
+										var showCurrentCheckbox = self.element.parent().find("#showCurrent");
+										var showCurrent = showCurrentCheckbox[0].checked;
 										list.forEach(function(item) {
 											item.startDate = self.toDate(item.date_start);
 											item.endDate = self.toDate(item.date_end);
 										});
+										if (showCurrent) {
+											list = list.filter((value, index, array) => {
+												let now = new Date();
+												let endDate = new Date(value.date_end);
+												if (value.date_end == "" || endDate.getTime() > now.getTime()) {
+													return true;
+												}
+											})
+										}
 										var listActivities = new can.List(list);
 										self.listActivities = listActivities;
 										next();
@@ -1493,6 +1427,13 @@ dzImage.prop('src', '').hide();
 
 
 					},
+					
+					refreshTruncatedCaption: function(data) {
+						var self = this;
+						
+						var caption = self.element.find('.captionTruncated-' + data.id);
+						caption[0].innerHTML = data.captionTruncated;
+					},
 
 
 
@@ -1646,18 +1587,25 @@ dzImage.prop('src', '').hide();
 							})
 							.then(function(list) {
 								var list = list.data || list;
-								console.log('ImageList:');
-								console.log(list);
-
 
 								self.clearImageList();
+								list.forEach((row) => {
+									if (row.caption.length > 80) {
+								    	row.captionTruncated = row.caption.substring(0,80);
+										row.captionTruncated = row.captionTruncated.substring(0, Math.min(row.captionTruncated.length, row.captionTruncated.lastIndexOf(" ")))+'...';
+									} else {
+										row.captionTruncated = row.caption;
+									}
+								});
+
 								self.listImages = list;
+								console.log(list);
 								self.dom.listImages.append(can.view('FCFActivities_ActivityReport_ImageList', { images: list, teammates: self.listTeammates, whoami: self.whoami }));
 
 								// self.imageRotate();
 								
 
-								self.refreshPeopleTaggedInImages();
+								// self.refreshPeopleTaggedInImages();
 
 								self.selectImageRow(self.dom.listImages.find('.addImage'));
 								self.clearForm();

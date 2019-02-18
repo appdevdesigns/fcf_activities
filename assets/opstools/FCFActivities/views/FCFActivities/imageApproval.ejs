@@ -5,69 +5,61 @@
 -->
 <!--Image Name-->
 <div id="opsportal-activityName" class="off-botm20">
-      <div class="form-group">
-        <label class="lbl-title"><span app-label-key="fcf.imageapproval.image">Image</span></label>
-        <div class="op-container off-botm20">
-          <div class="img-responsive fcf-image-embed" ap-op-image="true" opimage-url="<%= data.image %>">
-            <img class="img-responsive" src="<%= data.image %>" alt="Responsive image" >
-          </div>
-                               
-        </div>
-      </div>
-      <div class="form-horizontal">
-        <input type="hidden" class="form-control" name="language_code" value="<%= language_code || 'en' %>" >
-       <!--Caption--> 
-       <div class="form-group">
-          <label class="col-sm-1 nopadL control-label lbl-title"><span app-label-key="fcf.imageapproval.caption">Caption:</span></label>
-          <div class="col-sm-11">
-            <input type="text" class="form-control" name="caption" value="<%= data.caption %>" >
-          </div>
-       </div>
-       <!--/Caption-->
-       <!--Caption Govt--> 
-       <div class="form-group">
-          <label class="col-sm-1 nopadL control-label lbl-title"><span app-label-key="fcf.imageapproval.caption_govt">Caption (Govt):</span></label>
-          <div class="col-sm-11">
-            <input type="text" class="form-control" name="caption_govt" value="<%= data.caption_govt %>" >
-          </div>
-       </div>
-       <!--/Caption Govt-->
-       <!--Date-->
-       <div class="row">
-         <div class="col-sm-12">
-            <label class="col-sm-1 control-label nopadL lbl-title"><span app-label-key="fcf.imageapproval.date">Date:</span></label>
-            <div class="col-sm-11">
-              <div class="row">
-                <div class="col-sm-3">
-                  <input type="date" class="col-xs-2 form-control" name="date" value="<%= data.date %>">
-                </div>
-              </div>
+    <input type="hidden" class="form-control" name="language_code" value="<%= language_code || 'en' %>" >
+    <div class="form-group">
+        <div class="col-sm-12">
+            <div class="op-container off-botm20" style="background: #666; text-align: center;">
+                <div class="img-responsive" ap-op-image="true" opimage-url="<%= data.image.replace("scaled", "print") %>">
+                    <img class="img-responsive" src="<%= data.image.replace("scaled", "print") %>" alt="Responsive image" >
+                </div>  
             </div>
-         </div>
-       </div>
-       <!--/Date-->
-     </div>
+        </dvi>
+    </div>
+    <div class="form-horizontal">
+        <!--Caption--> 
+        <div class="form-group">
+            <div class="col-sm-3">
+                <strong><span app-label-key="fcf.imageapproval.caption">Caption:</span></strong>
+            </div>
+            <div class="col-sm-9">
+                <%= data.caption %>
+            </div>
+        </div>
+        <!--/Caption-->
+        <!--Caption Govt--> 
+        <div class="form-group">
+            <div class="col-sm-3">
+                <strong><span app-label-key="fcf.imageapproval.caption_govt">Activity Location</span>:</strong>
+            </div>
+            <div class="col-sm-9">
+                <%= data.caption_govt %>
+            </div>
+        </div>
+        <!--/Caption Govt-->
+        <!--Date-->
+        <div class="form-group">
+            <div class="col-sm-3">
+                <strong><span app-label-key="fcf.imageapproval.date">Date:</span></strong>
+            </div>
+            <div class="col-sm-9">
+                <%= data.date %>
+            </div>
+        </div>
+        <!--/Date-->
+        <!--People in Photo-->
+        <div class="form-group">
+            <div class="col-sm-3">
+                <strong><span app-label-key="fcf.imageapproval.peopleInPhoto">People in photo:</span></strong>
+            </div>
+            <div class="col-sm-9">
+                <!--List of people with closed button-->
+                <% taggedPeople.forEach(function(person, idx, array){ %>
+                    <%= person.display_name %><% if (idx !== array.length - 1) { %>, <% } %>
+                <%  }) %>
+                <!--/End here-->
+            </div>
+        </div>
+        <!--/People in Photo-->  
+    </div>
 </div> 
 <!--/Image Name-->
-<!--People in Photo-->                  
-<div id="opsportal-description">
-  <label class="lbl-title"><span app-label-key="fcf.imageapproval.peopleInPhoto">People in photo:</span></label>
-    <div class="op-container op-block-border">
-      <div class="row" style="margin:0;">
-        <!--List of people with closed button-->
-        <% taggedPeople.forEach(function(person){ %>
-
-
-        <div class="alert people alert-dismissible">
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <img class="op-avatar pull-left" src="<%= person.avatar %>" alt="Responsive image" ><strong><%= person.display_name %></strong>
-          <input type="hidden" name="taggedPeople" value="<%= person.IDPerson %>">
-        </div>
-
-        <%  }) %>
-                                                                                      
-        <!--/End here-->
-      </div>
-    </div>
-</div>
-<!--/People in Photo-->  
