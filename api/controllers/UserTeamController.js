@@ -45,7 +45,7 @@ module.exports = {
                 AD.log('... fcfPerson.ministryTeams()');
                 if (fcfPerson) {
 
-                    fcfPerson.ministryTeams({codeMinistryStatus:"A"})
+                    fcfPerson.ministryTeams()
                     .fail(function(err){
                         next(err);
                     })
