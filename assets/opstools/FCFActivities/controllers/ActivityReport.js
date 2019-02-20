@@ -1081,7 +1081,8 @@ dzImage.prop('src', '').hide();
 
 											myTeam.push({
 												id: person.IDPerson,
-												text: person.display_name
+												text: person.display_name,
+												avatar: person.avatar
 											});
 										})
 										
@@ -1113,7 +1114,8 @@ dzImage.prop('src', '').hide();
 
 											myProject.push({
 												id: person.IDPerson,
-												text: person.display_name
+												text: person.display_name,
+												avatar: person.avatar
 											});
 										})
 										
@@ -1149,7 +1151,7 @@ dzImage.prop('src', '').hide();
 									multiple: true,
 									placeholder: self.labelPeopleInPhoto,
 									positionDropdown: function(dropdownEl, selectEl) {
-										dropdownEl.style.width = selectEl.offsetWidth/3 + "px";
+										dropdownEl.style.width = selectEl.offsetWidth/2 + "px";
 										var topPos = 0;
 										var el = selectEl.offsetParent;
 										while (el) {
@@ -1159,9 +1161,20 @@ dzImage.prop('src', '').hide();
 										dropdownEl.style.top = (selectEl.clientHeight + selectEl.offsetTop + topPos - window.scrollY) + "px";
 										var contain = document.getElementsByClassName("selectivity-results-container");
 										for (var i = 0; i < contain.length; i++) {
-											contain[i].style.maxHeight = "18em";
+											contain[i].style.maxHeight = "22em";
 										}
-									}
+									},
+									templates: {
+								        resultItem: function(item) {
+											var html = '<div class="selectivity-result-item" style="border-bottom: 1px solid #CCC;" data-item-id="' + item.id + '">';
+											if (item.avatar) {
+												html += '<img style="margin-right: 10px; width:40px; height:40px; object-fit:cover; border-radius:100%;" src="'+item.avatar+'">';
+											}
+											html += item.text;
+											html += '</div>';
+								            return html;
+								        }
+								    }
 								});
 							
 							}
