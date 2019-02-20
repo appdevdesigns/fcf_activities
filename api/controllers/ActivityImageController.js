@@ -1869,7 +1869,7 @@ console.error(err);
 
                             var memberIDs = listMembers.map((tm)=>{ return tm.IDPerson; });
                             FCFPerson.find({IDPerson:memberIDs})
-                            .sort('NameLastEng ASC')
+                            .sort('NameFirstEng ASC and NameLastEng ASC')
                             .then((listPersons)=>{
 
                                 // local fn() to add the avatar info for each person:
@@ -1930,7 +1930,7 @@ console.error(err);
 
                             var memberIDs = listMembers.map((tm)=>{ return tm.IDPerson; });
                             FCFPerson.find({IDPerson:memberIDs})
-                            .sort('NameLastEng ASC')
+                            .sort('NameFirstEng ASC and NameLastEng ASC')
                             .then((listPersons)=>{
 
                                 // local fn() to add the avatar info for each person:
@@ -1943,13 +1943,9 @@ console.error(err);
 
                                     var listSmallEntries = [];
                                     listPersons.forEach((P)=>{
-                                        listSmallEntries.push({
-                                            IDPerson:P.IDPerson,
-                                            avatar:P.avatar || _defaultAvatar,
-                                            display_name:P.displayName('en')
-                                        })
+                                        listSmallEntries.push(P.IDPerson)
                                     })
-                                    hashTeams[team.IDMinistry].members = listSmallEntries;
+                                    hashTeams[team.IDMinistry].memberIDs = listSmallEntries;
                                     findMembers(list, cb);
 
                                 })
