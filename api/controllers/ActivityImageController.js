@@ -1641,6 +1641,363 @@ console.error(err);
             res.AD.success(allTeams);
         })
 
+    },
+    
+    // get /fcf_activities/mobile/myprojects?[filter]
+    //
+    // gets all Projects and Teams for the current logged in user.
+    //
+    // Related Team Activities and Members are also included.
+    //
+    // [filter]:  you can add on a sails like query filter for the Teams to 
+    // further condition which Teams you want:
+    mobileMyProjects:function(req, res) {
+
+
+
+        var user = ADCore.user.current(req);
+
+        var guid = user.GUID();
+        var PersonID = null;
+
+        var filter = req.query || {};
+        if(filter.ticket) delete filter.ticket;
+        if(filter._cas_retry) delete filter._cas_retry;
+
+
+        var allProjects = []; // collect Projects to store teams in;
+        var allTeams = [];  // collect all the Teams to return;
+        var hashActivities = {}; // 
+
+        async.series([
+
+            // find the Person for the logged in user
+            (next)=>{
+
+                GUID2Person.findOne({guid: guid})
+                .then(function(data){
+
+                    if (!data) {
+                        var err = new Error('No Person found for this user.');
+                        err.responseCode = 404;
+                        next(err);
+                        return;
+                    }
+
+                    PersonID = data.person;
+                    next();
+
+                })
+                .catch(next);
+
+            },
+            
+            // find the Projects this Person is in.
+            (next)=>{
+
+                // limit to found person
+
+                FCFMinistryTeamMember.find({IDPerson:PersonID, codeServiceStatus:"S"})
+                .then((list)=>{
+
+                    // if "null" is sent as a filter value
+                    Object.keys(filter).forEach((k)=>{
+                        if (filter[k] == "null") {
+                            filter[k] = null; 
+                        }
+                    })
+
+                    filter.IDProject = list.map((l)=>{return l.IDProject;});
+                    
+                    console.log(filter);
+                    
+                    FCFProject.find(filter)
+                    .sort('ProjectNameEng ASC')
+                    .then((list)=>{
+
+                        // convert to small team reference:
+                        list.forEach((l)=>{
+                            allProjects.push({
+                                IDProject: l.IDProject,
+                                ProjectName: l.ProjectNameEng
+                            })
+                        });
+                        console.log(allProjects);
+                        next();
+                        
+                    })
+                    .catch(next);
+
+                })
+                .catch(next);
+
+            },
+
+            // find the Teams (ministries) this Person is in.
+            (next)=>{
+
+                // limit to found person
+                FCFMinistryTeamMember.find({IDPerson:PersonID, codeServiceStatus:"S"})
+                .then((list)=>{
+
+                    // if "null" is sent as a filter value
+                    Object.keys(filter).forEach((k)=>{
+                        if (filter[k] == "null") {
+                            filter[k] = null; 
+                        }
+                    })
+                    filter.IDMinistry = list.map((l)=>{return l.IDMinistry;});
+                    
+                    FCFMinistry.find(filter)
+                    .populate('activities')
+                    .sort('MinistryDisplayName ASC')
+                    .then((list)=>{
+
+                        // convert to small team reference:
+                        list.forEach((l)=>{
+                            allTeams.push({
+                                IDMinistry: l.IDMinistry,
+                                MinistryDisplayName: l.MinistryDisplayName,
+                                IDProject: l.IDProject,
+                                activities: l.activities
+                            })
+                        })
+                        console.log(allTeams);
+                        next();
+                    })
+                    .catch(next);
+
+
+                })
+                .catch(next);
+
+            },
+
+            // lookup activities translations:
+            (next)=>{
+
+                var activityIDs = [];
+                allTeams.forEach((t)=>{ 
+                    t.activities.forEach((a)=>{
+                        activityIDs.push(a.id);
+                    }) 
+                })
+
+                console.log(activityIDs);
+
+                FCFActivity.find({id:activityIDs})
+                .populate('translations')
+                .then((list)=>{
+
+                    console.log(list);
+                    var translateIt = (indx, cb) => {
+                        if (indx >= list.length) {
+                            cb();
+                        } else {
+
+                            var entry = list[indx];
+                            if (entry.translations.length) {
+                                entry.translate('en')
+                                .then(()=>{
+                                    translateIt(indx+1, cb);
+                                })
+                                .fail(cb);
+                            } else {
+                                cb();
+                            }
+                        }
+                    }
+
+                    translateIt(0, (err)=>{
+
+                        if (err) {
+                            next(err);
+                            return;
+                        }
+
+                        // list is the translated activities:
+                        // create a quick lookup hash:
+                        list.forEach((l)=>{
+                            hashActivities[l.id] = {
+                                id: l.id,
+                                activity_name:l.activity_name,
+                                date_start:l.date_start
+                            }
+                        })
+
+                        next();
+                    })
+                })
+            },
+
+            // reduce .activities to subset:
+            (next) =>{
+                
+                allTeams.forEach((t)=>{
+                    var theseActivities = [];
+                    t.activities.forEach((a)=>{
+                        theseActivities.push(hashActivities[a.id])
+                    })
+
+                    // sort theseActivities by activity_name:
+                    var orderedActivities = _.orderBy(theseActivities, ['date_start', 'activity_name'], ['desc', 'asc']);
+                    t.activities = orderedActivities;
+                })
+
+                next();
+            },
+            
+            // add the members for each project
+            (next)=>{
+
+                var tempListOfProjects = [];  // create a new array since our findMembers() .shift()s entries off
+                var hashProjects = {};
+                allProjects.forEach((p)=>{ 
+                    p.members = [];
+                    tempListOfProjects.push(p);
+                    hashProjects[p.IDProject] = p;
+                });
+
+                function findMembers(list, cb) {
+                    if (list.length == 0) {
+                        cb();
+                    } else {
+
+                        var project = list.shift();
+                        FCFMinistryTeamMember.find({IDProject:project.IDProject})
+                        .then((listMembers)=>{
+
+                            var memberIDs = listMembers.map((tm)=>{ return tm.IDPerson; });
+                            FCFPerson.find({IDPerson:memberIDs})
+                            .sort('NameFirstEng ASC and NameLastEng ASC')
+                            .then((listPersons)=>{
+
+                                // local fn() to add the avatar info for each person:
+                                addAvatar(listPersons, function(err) {
+
+                                    if (err) {
+                                        cb(err);
+                                        return;
+                                    }
+
+                                    var listSmallEntries = [];
+                                    listPersons.forEach((P)=>{
+                                        listSmallEntries.push({
+                                            IDPerson:P.IDPerson,
+                                            avatar:P.avatar || _defaultAvatar,
+                                            display_name:P.displayName('en')
+                                        })
+                                    })
+                                    hashProjects[project.IDProject].members = listSmallEntries;
+                                    findMembers(list, cb);
+
+                                })
+                                
+                            })
+                            .catch(cb);
+                            
+                        })
+                        .catch(cb);
+
+                    }
+                }
+
+                findMembers(tempListOfProjects, function(err){
+                    next(err);
+                })
+
+            },
+
+            // add the members for each team
+            (next)=>{
+
+                var tempListOfTeams = [];  // create a new array since our findMembers() .shift()s entries off
+                var hashTeams = {};
+                allTeams.forEach((t)=>{ 
+                    t.members = [];
+                    tempListOfTeams.push(t);
+                    hashTeams[t.IDMinistry] = t;
+                });
+
+                function findMembers(list, cb) {
+                    if (list.length == 0) {
+                        cb();
+                    } else {
+
+                        var team = list.shift();
+                        FCFMinistryTeamMember.find({IDMinistry:team.IDMinistry})
+                        .then((listMembers)=>{
+
+                            var memberIDs = listMembers.map((tm)=>{ return tm.IDPerson; });
+                            FCFPerson.find({IDPerson:memberIDs})
+                            .sort('NameFirstEng ASC and NameLastEng ASC')
+                            .then((listPersons)=>{
+
+                                // local fn() to add the avatar info for each person:
+                                addAvatar(listPersons, function(err) {
+
+                                    if (err) {
+                                        cb(err);
+                                        return;
+                                    }
+
+                                    var listSmallEntries = [];
+                                    listPersons.forEach((P)=>{
+                                        listSmallEntries.push(P.IDPerson)
+                                    })
+                                    hashTeams[team.IDMinistry].memberIDs = listSmallEntries;
+                                    findMembers(list, cb);
+
+                                })
+                                
+                            })
+                            .catch(cb);
+                            
+                        })
+                        .catch(cb);
+
+                    }
+                }
+
+                findMembers(tempListOfTeams, function(err){
+                    next(err);
+                })
+
+            },
+            
+            // Put the teams into the projects
+            (next)=>{
+                
+                console.log("_____________________________ here here _____________________________________");
+
+                allProjects.forEach((p)=>{
+                    
+                    p.teams = [];
+                    
+                    allTeams.forEach((t)=>{
+                        
+                        if (p.IDProject == t.IDProject) {
+                            p.teams.push(t);
+                        }
+                        
+                    });
+                    
+                });
+                
+                next();
+                
+            }
+
+        ], (err, data)=>{
+
+            if (err) {
+                res.AD.error(err, err.responseCode || 500);  
+                return;
+            }
+
+            res.AD.success(allProjects);
+        })
+
     }
     
 };

@@ -54,6 +54,7 @@ module.exports = {
   ////
   'get /fcf_activities/mobile/myactivityimages':'fcf_activities/ActivityImageController.mobileMyImages',
   'get /fcf_activities/mobile/myteams':'fcf_activities/ActivityImageController.mobileMyTeams',
+  'get /fcf_activities/mobile/myprojects':'fcf_activities/ActivityImageController.mobileMyProjects'
 
 
 
