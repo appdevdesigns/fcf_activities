@@ -292,6 +292,8 @@ steal(
 						this.buttonDisable('save');
 						this.buttonDisable('cancel');
 						this.dom.buttons.del.hide();
+						
+						this.dom.processApprovalMsg[0].innerHTML = "";
 						// this.buttonEnable('delete');
 					},
 
@@ -377,7 +379,33 @@ steal(
 
 					loadForm: function(image) {
 						var self = this;
-						console.log('... loading Form with image:', image.getID())
+						console.log('... loading Form with image:', image.getID());
+						console.log('... loading Form with image:', image);
+
+						if (image.status == "denied") {
+							// now load our data from the server:
+							self.PARequest = AD.Model.get('opstools.ProcessApproval.PARequest');
+							self.PARequest.findAll({ uniqueKey: 'fcf.activities.image.' + image.getID() })
+								.fail(function (err) {
+									console.error('!!! Dang.  something went wrong:', err);
+								})
+								.then(function (list) {
+									console.log(list);
+									var reasons = list[0].comment.split("|");
+									var htmlList = "<ul class='list-group'><li class='list-group-item list-group-item-danger'>This activity image was rejected...please fix the following</li>";
+									reasons.forEach((r)=>{
+										if (r == "") {
+											r = "No reason provided."
+										}
+										htmlList += "<li class='list-group-item'>" + r + "</li>";
+									});
+									htmlList += "</ul>";
+									self.dom.processApprovalMsg[0].innerHTML = htmlList;
+								});
+
+						} else {
+							self.dom.processApprovalMsg[0].innerHTML = "";
+						}
 
 						this.currentlyEditingImage = image;
 
@@ -938,6 +966,7 @@ dzImage.prop('src', '').hide();
 						this.dom.inputCaption = this.dom.imageForm.find('#image-caption');
 						this.dom.inputCaptionGovt = this.dom.imageForm.find('#image-caption-govt');
 						this.dom.inputCaptionCounter = this.dom.imageForm.find('#charCount');
+						this.dom.processApprovalMsg = this.element.find("#processApprovalMsg");
 						this.dom.inputDate = this.dom.imageForm.find('#image-date');
 						this.dom.inputTags = this.element.find('#image-tags');
 						// this.dom.peopleObjects = this.element.find('.fcf-activitiy-people-list');

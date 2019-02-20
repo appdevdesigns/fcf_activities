@@ -97,6 +97,9 @@ module.exports = function(cb) {
 
     // create a listner for when our Image entries are approved
     ADCore.queue.subscribe('fcf.activities.image', function(message, data) {
+        
+        console.log("message: ", message);
+        console.log("data: ", data);
 
 		// data.status    : {string}  'approved'  or 'rejected'
 		// data.data      : {obj} any updated values from the ProcessApproval form
@@ -155,6 +158,7 @@ module.exports = function(cb) {
 
         } else if (data.status == 'rejected') {
             var updates = data.data;
+            console.log("data:", data);
             if (updates.length > 0) {
                 var updatedValues = JSON.parse(updates);
                 FCFActivityImages.findOne({id:data.reference.id})
@@ -176,7 +180,8 @@ module.exports = function(cb) {
 								id: data.reference.id,
 								pops: ["uploadedBy", "translations"],
 								transType: "image",
-								menu: data.menu
+								menu: data.menu,
+                                comment: data.comment
 							});
 
 						});
@@ -194,7 +199,8 @@ module.exports = function(cb) {
                     id: data.reference.id,
                     pops: ["uploadedBy", "translations"],
                     transType: "image",
-                    menu: data.menu
+                    menu: data.menu,
+                    comment: data.comment
                 });
             }
 
@@ -525,6 +531,9 @@ function FCFCommonRejectionHandler(options) {
     var id = options.id;
     var pops = options.pops || [];
     var transType = options.transType;
+    var comment = options.comment;
+    
+    console.log("options: ", options);
 
 // console.log('FCFCommonapprovalhandler: options:', options);
 
@@ -552,6 +561,61 @@ function FCFCommonRejectionHandler(options) {
             model.status = 'denied';
             model.save()
 				.then(function(updatedModel) {
+                    
+                    console.log("model: ",model);
+                    
+                    FCFPerson.findOne({IDPerson:model.uploadedBy})
+                    .then(function(uploader){
+
+                        console.log("uploader:", uploader);
+                        
+                        FCFCMDetails.findOne({IDPerson:uploader.IDPerson, codeCMType:"EM"})
+    					.then(function(details){
+                            console.log(details);
+                    
+                            var email = details.CMDetails.trim();
+                    
+                            console.log("-----------------here -----------------------");
+                            var nodemailer = require('nodemailer');
+                    
+                            var transporter = nodemailer.createTransport({
+                                host: "box853.bluehost.com",
+                                port: 587,
+                                secure: false, // true for 465, false for other ports
+                                auth: {
+                                }
+                            });
+                    
+                            var mailOptions = {
+                                from: 'james@appdevdesigns.net',
+                                to: email,
+                                subject: 'Sending Email using Node.js',
+                                text: comment
+                            };
+                            
+                            console.log("mailOptions: ", mailOptions);
+                    
+                            transporter.sendMail(mailOptions, function(error, info){
+                                if (error) {
+                                    console.log(error);
+                                } else {
+                                    console.log('Email sent: ' + info.response);
+                                }
+                            });
+    					})
+    					.catch(function(err){
+    						ADCore.error.log('fcf_core: Error looking up FCFCMDetails', {
+    							error:err,
+    							cond:uploader.IDPerson
+    						});
+    						return null;
+    					})
+
+                    })
+                    .catch(function(err){
+                        AD.log(err);
+                    })
+                    
 
 
 					// Sails v0.12 update changed behavior of .save()
