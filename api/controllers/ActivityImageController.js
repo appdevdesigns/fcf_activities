@@ -1319,11 +1319,15 @@ console.error(err);
                             } else {
 
                                 var entry = list[indx];
-                                entry.translate('en')
-                                .then(()=>{
-                                    translateIt(indx+1, cb);
-                                })
-                                .fail(cb);
+                                if (entry.translations.length) {
+                                    entry.translate('en')
+                                    .then(()=>{
+                                        translateIt(indx+1, cb);
+                                    })
+                                    .fail(cb);
+                                } else {
+                                    cb();
+                                }
                             }
                         }
 
@@ -1392,6 +1396,34 @@ console.error(err);
                     next();
                 },
 
+                // merge denied info into Activity List
+                (next)=>{
+
+                    var rejectedPhotos = [];
+                    allActivities.forEach((a)=>{
+                        if (a.status == "denied") {
+                            rejectedPhotos.push('fcf.activities.image.' +a.id);
+                        }
+                    })
+                    PARequest.find({ uniqueKey: rejectedPhotos })
+                        .fail(function (err) {
+                            console.error('!!! Dang.  something went wrong:', err);
+                        })
+                        .then(function (list) {
+                            allActivities.forEach((a)=>{
+                                if (a.status == "denied") {
+                                    list.forEach((pa)=>{
+                                        if (pa.uniqueKey == 'fcf.activities.image.' + a.id) {
+                                            if (pa.comment)
+                                                a.feedback = JSON.parse(pa.comment);
+                                        }
+                                    })
+                                }
+                            })
+                            
+                            next();
+                        });
+                },
 
 
             ], (err, data)=>{
@@ -1523,11 +1555,15 @@ console.error(err);
                         } else {
 
                             var entry = list[indx];
-                            entry.translate('en')
-                            .then(()=>{
-                                translateIt(indx+1, cb);
-                            })
-                            .fail(cb);
+                            if (entry.translations.length) {
+                                entry.translate('en')
+                                .then(()=>{
+                                    translateIt(indx+1, cb);
+                                })
+                                .fail(cb);
+                            } else {
+                                cb();
+                            }
                         }
                     }
 
@@ -1864,7 +1900,7 @@ console.error(err);
                     } else {
 
                         var project = list.shift();
-                        FCFMinistryTeamMember.find({IDProject:project.IDProject})
+                        FCFMinistryTeamMember.find({IDProject:project.IDProject, codeServiceStatus:"S"})
                         .then((listMembers)=>{
 
                             var memberIDs = listMembers.map((tm)=>{ return tm.IDPerson; });

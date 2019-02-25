@@ -333,7 +333,7 @@ module.exports = {
 
                     AD.log('... looking up people:'+ peopleIDs );
 
-                    FCFPerson.find({IDPerson:peopleIDs}).sort('NameLastEng ASC')
+                    FCFPerson.find({IDPerson:peopleIDs}).sort('NameFirstEng ASC and NameLastEng ASC')
                     .then(function(list){
 
                         list.forEach(function(person){

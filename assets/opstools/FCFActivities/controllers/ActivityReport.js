@@ -391,14 +391,23 @@ steal(
 								})
 								.then(function (list) {
 									console.log(list);
-									var reasons = list[0].comment.split("|");
+									var reasons = JSON.parse(list[0].comment);
 									var htmlList = "<ul class='list-group'><li class='list-group-item list-group-item-danger'>This activity image was rejected...please fix the following</li>";
-									reasons.forEach((r)=>{
-										if (r == "") {
-											r = "No reason provided."
-										}
-										htmlList += "<li class='list-group-item'>" + r + "</li>";
-									});
+									if (reasons.fixPhoto) {
+										htmlList += "<li class='list-group-item'>" + (AD.lang.label.getLabel('fcf.report.fixPhoto') || 'Photo is not appropriate. Please use a different photo.') + "</li>"
+									}
+									if (reasons.fixCaption) {
+										htmlList += "<li class='list-group-item'>" + (AD.lang.label.getLabel('fcf.report.fixCaption') || 'Caption needs to be reworded to include both WHAT you are doing and HOW it impacts Thai people.') + "</li>"
+									}
+									if (reasons.fixDate) {
+										htmlList += "<li class='list-group-item'>" + (AD.lang.label.getLabel('fcf.report.fixDate') || 'Date of the photo is not within the current reporting period. Please correct.') + "</li>"
+									}
+									if (reasons.fixLocation) {
+										htmlList += "<li class='list-group-item'>" + (AD.lang.label.getLabel('fcf.report.fixLocation') || 'Location is to general. Please provide complete details of the location: Name, Tambon and Ampoe.') + "</li>"
+									}
+									if (reasons.customMessage != "") {
+										htmlList += "<li class='list-group-item'>" + reasons.customMessage + "</li>"
+									}
 									htmlList += "</ul>";
 									self.dom.processApprovalMsg[0].innerHTML = htmlList;
 								});
@@ -1168,7 +1177,7 @@ dzImage.prop('src', '').hide();
 								        resultItem: function(item) {
 											var html = '<div class="selectivity-result-item" style="border-bottom: 1px solid #CCC;" data-item-id="' + item.id + '">';
 											if (item.avatar) {
-												html += '<img style="margin-right: 10px; width:40px; height:40px; object-fit:cover; border-radius:100%;" src="'+item.avatar+'">';
+												html += '<img style="margin-right: 10px; width:50px; height:50px; object-fit:cover; border-radius:100%;" src="'+item.avatar+'">';
 											}
 											html += item.text;
 											html += '</div>';

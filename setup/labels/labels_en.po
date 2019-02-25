@@ -74,8 +74,8 @@ msgstr "Team(s):"
 #. path: opstool-FCFActivities
 #. code: en
 #. key: fcf.activityapproval.createdOn
-msgid "Created On: <%= createdAt %>"
-msgstr "Created On: <%= createdAt %>"
+msgid "Created On:"
+msgstr "Created On:"
 
 #. path: opstool-FCFActivities
 #. code: en
@@ -188,8 +188,8 @@ msgstr "Team(s):"
 #. path: opstool-FCFActivities
 #. code: en
 #. key: fcf.imageapproval.createdOn
-msgid "Created On: <%= createdAt %>"
-msgstr "Created On: <%= createdAt %>"
+msgid "Created On:"
+msgstr "Created On:"
 
 #. path: opstool-FCFActivities
 #. code: en
