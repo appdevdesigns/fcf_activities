@@ -514,8 +514,8 @@ steal(
 
 										self.listImages.unshift(obj);
 										
-										if (obj.caption.length > 80) {
-											obj.captionTruncated = obj.caption.substring(0,80);
+										if (obj.caption.length > 70) {
+											obj.captionTruncated = obj.caption.substring(0,55);
 											obj.captionTruncated = obj.captionTruncated.substring(0, Math.min(obj.captionTruncated.length, obj.captionTruncated.lastIndexOf(" ")))+'...';
 										} else {
 											obj.captionTruncated = obj.caption;
@@ -563,8 +563,8 @@ steal(
 
 										console.log(' ... returnedData:', data);
 										// we should get the actual image/path back:
-										if (data.caption.length > 80) {
-											data.captionTruncated = data.caption.substring(0,80);
+										if (data.caption.length > 70) {
+											data.captionTruncated = data.caption.substring(0,55);
 											data.captionTruncated = data.captionTruncated.substring(0, Math.min(data.captionTruncated.length, data.captionTruncated.lastIndexOf(" ")))+'...';
 										} else {
 											data.captionTruncated = data.caption;
@@ -650,7 +650,9 @@ steal(
 						// image needs to be set:
 						isValid = isValid && (values.image != '');
 						isValid = isValid && (values.caption != '');
+						isValid = isValid && (values.caption_govt != '');
 						isValid = isValid && (values.date != '');
+						isValid = isValid && (values.caption.length < 240);
 						isValid = isValid && (values.taggedPeople.length > 0);
 
 						return isValid;
@@ -1641,8 +1643,8 @@ dzImage.prop('src', '').hide();
 
 								self.clearImageList();
 								list.forEach((row) => {
-									if (row.caption.length > 80) {
-								    	row.captionTruncated = row.caption.substring(0,80);
+									if (row.caption.length > 70) {
+								    	row.captionTruncated = row.caption.substring(0,55);
 										row.captionTruncated = row.captionTruncated.substring(0, Math.min(row.captionTruncated.length, row.captionTruncated.lastIndexOf(" ")))+'...';
 									} else {
 										row.captionTruncated = row.caption;
