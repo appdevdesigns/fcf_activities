@@ -87,6 +87,19 @@ steal(
 							this.element.find('.objectives-section').html('');  // clear the contents!
 
 
+							// console.log("choose ministry init");
+							AD.comm.service.get({ url: '/fcf_activities/getactivityaddstatus' })
+							.fail(function(err) {
+								console.error(err);
+							})
+							.then(function(res) {
+								var access = res.data || res;
+								// console.log(access);
+								if (access.canAdd == true) {
+									self.element.find('#fcf-activity-add-chooseAssignment-addAssignment')[0].style.display = "";
+								}
+							});
+
 
 							////
 							//// Attach to DOM elements

@@ -44,6 +44,8 @@ module.exports = {
   'post /fcf_activities/activityimageupload':'fcf_activities/ActivityImageController.upload',
 
   'get /fcf_activities/teammembers':'fcf_activities/ActivityReportController.teammembers',
+  'get /fcf_activities/getdenial':'fcf_activities/ActivityImageController.getDenial',
+  'get /fcf_activities/getactivityaddstatus':'fcf_activities/ActivityImageController.getActivityAddStatus',
 
 
   ////

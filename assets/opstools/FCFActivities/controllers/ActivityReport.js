@@ -379,37 +379,20 @@ steal(
 
 					loadForm: function(image) {
 						var self = this;
-						console.log('... loading Form with image:', image.getID());
-						console.log('... loading Form with image:', image);
+						// console.log('... loading Form with image:', image.getID());
+						// console.log('... loading Form with image:', image);
 
 						if (image.status == "denied") {
 							// now load our data from the server:
-							self.PARequest = AD.Model.get('opstools.ProcessApproval.PARequest');
-							self.PARequest.findAll({ uniqueKey: 'fcf.activities.image.' + image.getID() })
-								.fail(function (err) {
-									console.error('!!! Dang.  something went wrong:', err);
+							// request the people associated with this team:
+							AD.comm.service.get({ url: '/fcf_activities/getdenial', params: { id: image.getID() } })
+								.fail(function(err) {
+									console.error(err);
+									console.error('problem looking up denial: image id ' + image.getID());
 								})
-								.then(function (list) {
-									console.log(list);
-									var reasons = JSON.parse(list[0].comment);
-									var htmlList = "<ul class='list-group'><li class='list-group-item list-group-item-danger'>This activity image was rejected...please fix the following</li>";
-									if (reasons.fixPhoto) {
-										htmlList += "<li class='list-group-item'>" + (AD.lang.label.getLabel('fcf.report.fixPhoto') || 'Photo is not appropriate. Please use a different photo.') + "</li>"
-									}
-									if (reasons.fixCaption) {
-										htmlList += "<li class='list-group-item'>" + (AD.lang.label.getLabel('fcf.report.fixCaption') || 'Caption needs to be reworded to include both WHAT you are doing and HOW it impacts Thai people.') + "</li>"
-									}
-									if (reasons.fixDate) {
-										htmlList += "<li class='list-group-item'>" + (AD.lang.label.getLabel('fcf.report.fixDate') || 'Date of the photo is not within the current reporting period. Please correct.') + "</li>"
-									}
-									if (reasons.fixLocation) {
-										htmlList += "<li class='list-group-item'>" + (AD.lang.label.getLabel('fcf.report.fixLocation') || 'Location is to general. Please provide complete details of the location: Name, Tambon and Ampoe.') + "</li>"
-									}
-									if (reasons.customMessage != "") {
-										htmlList += "<li class='list-group-item'>" + reasons.customMessage + "</li>"
-									}
-									htmlList += "</ul>";
-									self.dom.processApprovalMsg[0].innerHTML = htmlList;
+								.then(function(res) {
+									var list = res.data || res;
+									self.dom.processApprovalMsg[0].innerHTML = list;
 								});
 
 						} else {

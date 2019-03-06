@@ -200,6 +200,43 @@ module.exports = {
         });
 
     },
+    
+    getActivityAddStatus:function(req, res) {
+        var user = ADCore.user.current(req);
+        var userID = user.id();
+        var roles = [];
+        Permission.find({user: userID})
+        .populate('role')
+        .then(function(plist){
+
+// console.log('... Permissions:', plist);
+            plist.forEach(function(i) {
+                roles.push(i.role.id);
+            });
+
+            PermissionAction.find({action_key:"adroit.activity.upload"})
+            .populate('roles')
+            .then(function(paList){
+
+// console.log('... Actions:', paList);
+// console.log('... look for these roles...', roles);
+                paList[0].roles.forEach(function(i) {
+                    if (roles.indexOf(i.id) != -1) {
+                        ADCore.comm.success(res, {canAdd: true});
+                        return;
+                    }
+                })
+                ADCore.comm.success(res, {canAdd: false});
+                return;
+            })
+            .catch(function(err){
+                ADCore.comm.error(res, err);
+            });
+        })
+        .catch(function(err){
+            ADCore.comm.error(res, err);
+        });
+    },
 
     getCount:function(req, res) {
         var user = ADCore.user.current(req);
@@ -255,6 +292,45 @@ module.exports = {
           ADCore.comm.error(res, err);
         })
 
+    },
+    
+    getDenial:function(req, res) {
+        
+        var id = req.param('id');
+        if (!id) {
+            AD.comm.error(res, new Error('no id provided'));
+            return;
+        }
+    
+        PARequest.find({ uniqueKey: 'fcf.activities.image.' + id })
+            .fail(function (err) {
+                ADCore.comm.error(res, err);
+            })
+            .then(function (list) {
+                // console.log(list);
+                var reasons = JSON.parse(list[0].comment);
+                var htmlList = "<ul class='list-group'><li class='list-group-item list-group-item-danger'>This activity image was rejected...please fix the following</li>";
+                if (reasons.fixPhoto) {
+                    htmlList += "<li class='list-group-item'>" + 'Photo is not appropriate. Please use a different photo.' + "</li>"
+                }
+                if (reasons.fixCaption) {
+                    htmlList += "<li class='list-group-item'>" + 'Caption needs to be reworded to include both WHAT you are doing and HOW it impacts Thai people.' + "</li>"
+                }
+                if (reasons.fixDate) {
+                    htmlList += "<li class='list-group-item'>" + 'Date of the photo is not within the current reporting period. Please correct.' + "</li>"
+                }
+                if (reasons.fixLocation) {
+                    htmlList += "<li class='list-group-item'>" + 'Location is to general. Please provide complete details of the location: Name, Tambon and Ampoe.' + "</li>"
+                }
+                if (reasons.customMessage != "") {
+                    htmlList += "<li class='list-group-item'>" + reasons.customMessage + "</li>"
+                }
+                htmlList += "</ul>";
+                
+                ADCore.comm.success(res, htmlList );
+            });
+
+        
     },
 
     create:function(req, res) {
