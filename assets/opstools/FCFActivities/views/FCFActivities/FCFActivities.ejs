@@ -51,22 +51,27 @@
 		</div>
 	</div>
 </div>
-
+                <br/>
 
 
                                <!--PAGE 1-->
 
-                <div id="fcf-activity-add-chooseTeam" class="container rbac-display rbac-page1" style="display:block">
-                  <div class="overflow-h fcf-blue-wrap col-sm-12 off-top20" resize-adj="-20">
+                <div id="fcf-activity-add-chooseTeam" class="container rbac-display rbac-page1" style="display:block; padding-bottom: 50px;">
+                  <div class="overflow-h fcf-blue-wrap col-sm-12">
                         <!--Top-->
                         <div class="row op-container">
-                            <div class="col-sm-12"><p class="pull-left" ><a href="http://www.thaiconnections.org/OSticket/upload/open.php"><i class="fa fa-question-circle" aria-hidden="true"></i><span class="light-txt" app-label-key="fcf.help">Help</span></a></p><p class="pull-right light-txt" app-label-key="fcf.assignment.Choose.Team.step1">Step 1 of 3</p></div>
+                            <div class="col-sm-12">
+                                <!-- <p class="pull-left" >
+                                    <a href="http://www.thaiconnections.org/OSticket/upload/open.php"><i class="fa fa-question-circle" aria-hidden="true"></i><span class="light-txt" app-label-key="fcf.help">Help</span></a>
+                                </p> -->
+                                <p class="pull-right light-txt" app-label-key="fcf.assignment.Choose.Team.step1">Step 1 of 3</p>
+                            </div>
                         </div>
                         <!--End Top-->
             <!--Content-->
             <div class="row op-container">
               <div class="col-sm-12">
-                <div class="light-blue-wrap col-sm-12" resize-adj="-120">
+                <div class="light-blue-wrap col-sm-12">
                 
                   <div class="overflow-h col-sm-12">
 
@@ -76,18 +81,20 @@
                     <h4><span app-label-key="fcf.assignment.Choose.Team.Desc" >What Ministry Team is this activity associated with?</span></h4>
 
                   </div>
-                  <div class="col-sm-12 off-botm15 ">
+                  <div class="col-sm-12">
                   <!--Search-->
                   <div class="col-sm-4 nopadLR">
+                    <div class="fcf-activity-list-search form-group">
                       <div class="input-group">
-                      <span class="input-group-btn"><button class="btn " type="button"><i class="fa fa-search"></i></button></span>
-
-                      <input type="text" class="form-control typeahead fcf-team-filter" placeholder="Search for Team" app-label-key="fcf.assignment.searchForTeam">
-
-                      </div> 
+                        <!-- <span class="input-group-btn"> -->
+                          <!-- <button class="btn " type="button"><i class="fa fa-search"></i></button> -->
+                        <!-- </span> -->
+                        <input type="text" class="typeahead fcf-team-filter" placeholder="Search for Team" app-label-key="fcf.assignment.searchForTeam">
+                      </div>
+                    </div> 
                   </div>
                   <!-- /Searh-->
-                  <div class="col-sm-8"></div>              
+                  <div class="col-sm-8 nopadLR"></div>              
                   </div>
                   
                   <div class="col-sm-12">
@@ -96,7 +103,7 @@
                       <tr>
 
                       <th data-field="MinistryDisplayName" ><span app-label-key="fcf.assignment.MinistryTeam">Ministry Team</span></th>
-                      <th data-field="ProjectOwner" ><span app-label-key="fcf.assignment.projectOwner">Project/Owner</span></th>
+                      <!-- <th data-field="ProjectOwner" ><span app-label-key="fcf.assignment.projectOwner">Project/Owner</span></th> -->
 
                       </tr>
                     </thead>
@@ -104,7 +111,7 @@
                       <!--  teams.forEach(function(team){   -->
                       <tr class="alt" obj-embed="team" >
                       <td>[[= team.attr('MinistryDisplayName')]]</td>
-                      <td>[[= team.attr('ProjectOwner')]]</td>
+                      <!-- <td>[[= team.attr('ProjectOwner')]]</td> -->
                       </tr>
                       <!-- }) -->
                       <tr class='mockup alt'>
@@ -125,7 +132,7 @@
                       </div>
             
             
-                      <div id="fcf-activity-actionsbtn" class="col-sm-12">
+                      <div id="fcf-activity-actionsbtn" class="form-inline col-sm-12 align-r ">
 
                           <button id="fcf-activity-add-chooseteam-next" class="btn op-btn btn-primary pull-right " href="#" role="button" rbac-show="rbac-page2"><span app-label-key="fcf.assignment.Next" >Next</span></button>
 
@@ -138,16 +145,21 @@
 
 
         <!--  NOTE:  I needed to keep the Page2 + Model under the same <div> container  -->
-        <div id="fcf-activity-add-chooseActivity" class="container rbac-display rbac-page2" style="display:none">
+        <div id="fcf-activity-add-chooseActivity" class="container rbac-display rbac-page2" style="display:none; padding-bottom: 50px;">
         
         <!--PAGE 2-->
 
        
-          <div class="op-container fcf-blue-wrap off-top20 overflow-h" resize-adj="-20">
+          <div class="overflow-h fcf-blue-wrap col-sm-12">
             <!--Top-->
             <div class="row op-container">
 
-                <div class="col-sm-12"><p class="pull-left" ><a href="http://www.thaiconnections.org/OSticket/upload/open.php"><i class="fa fa-question-circle" aria-hidden="true"></i><span class="light-txt" app-label-key="fcf.help">Help</span></a></p><p class="pull-right light-txt" app-label-key="fcf.assignment.add.step2">Step 2 of 3</p></div>
+                <div class="col-sm-12">
+                    <!-- <p class="pull-left" >
+                        <a href="http://www.thaiconnections.org/OSticket/upload/open.php"><i class="fa fa-question-circle" aria-hidden="true"></i><span class="light-txt" app-label-key="fcf.help">Help</span></a>
+                    </p> -->
+                    <p class="pull-right light-txt" app-label-key="fcf.assignment.add.step2">Step 2 of 3</p>
+                </div>
 
             </div>        
             <!--End Top-->
@@ -155,8 +167,8 @@
         <!--Content-->
         <div class="row op-container">
           <div class="col-sm-12">
-            <div class="light-blue-wrap op-container overflow-h"  resize-adj="-120">
-              <div class="col-sm-12 overflow-h">
+            <div class="col-sm-12 light-blue-wrap op-container">
+              <div class="col-sm-12">
                 <h4>
 
                   <span app-label-key="fcf.assignment.Choose.Instructions">Instructions</span>
@@ -173,19 +185,21 @@
                 </p>
               </div>
 
-              <div class="col-sm-12 ">
+              <div class="col-sm-12">
                 <!--Search-->
                 <div class="col-sm-4 nopadLR">
-                  <div class="fcf-activity-list-search form-group ">
+                  <div class="fcf-activity-list-search form-group">
                     <div class="input-group">
-                      <span class="input-group-btn"><button class="btn " type="button"><i class="fa fa-search"></i></button></span>
-                      <input type="text" class="form-control fcf-activity-filter typeahead" placeholder="Search for Activity" app-label-key="fcf.assignment.searchForActivity">
-                     </div> 
+                      <!-- <span class="input-group-btn"> -->
+                          <!-- <button class="btn btn-primary" type="button"><i class="fa fa-search"></i></button> -->
+                      <!-- </span> -->
+                      <input type="text" class="fcf-activity-filter typeahead" placeholder="Search for Activity" app-label-key="fcf.assignment.searchForActivity">
+                     </div>
                   </div>
                 </div>
 
                 <!-- /Search-->
-                <div class="col-sm-8 overflow-h">
+                <div class="col-sm-8 overflow-h nopadLR">
 
                   <a id="fcf-activity-add-chooseAssignment-addAssignment" class="btn op-btn btn-primary pull-right" href="#" role="button" data-toggle="modal" data-target="#fcf-modal-new-Activity"><span app-label-key="fcf.activity.Add" >Add Activity</span></a>
 
@@ -194,14 +208,14 @@
 
               </div>
                    
-              <div class="col-sm-12">
+              <div class="col-sm-12 ">
                 <table class="fcf-activity-list table table-bordered op-table "  data-cache="false">
                 <thead>
                   <tr>
 
-                  <th data-field="activity_name"  > <span app-label-key="fcf.assignment.Activity" >Activity Name</span></th>
-                  <th data-field="createdBy" ><span app-label-key="fcf.assignment.SubmittedBy">Submitted by</span></th>
-                  <th data-field="approvedBy" ><span app-label-key="fcf.assignment.ApprovedBy">Approved by</span></th>
+                  <th data-field="activity_name" > <span app-label-key="fcf.assignment.Activity" >Activity Name</span> <span style="float: right;"><label><input id="showCurrent" type="checkbox" checked="checked" /> Show current activities only</label></span> </th>
+                  <%# <th data-field="date_start" ><span app-label-key="fcf.assignment.StartDate">Start Date</span></th> %>
+                  <%# <th data-field="date_end" ><span app-label-key="fcf.assignment.EndDate">End Date</span></th> %>
 
                   </tr>
                 </thead>
@@ -212,10 +226,10 @@
                     [[= activity.attr("activity_name")]]
                   </td>
                   <td>
-                    [[= activity.attr("createdBy")]]
+                    [[= activity.attr("date_start")]]
                   </td>
                   <td>
-                    [[= activity.attr("approvedBy")]]
+                    [[= activity.attr("date_end")]]
                   </td>
                   </tr>
                   <!-- }) -->
@@ -241,7 +255,7 @@
           </div>        
         </div>
 
-        <div id="fcf-activity-actionsbtn" class="col-sm-12 align-right">
+        <div id="fcf-activity-actionsbtn" class="form-inline col-sm-12 align-r ">
             <button id="fcf-activity-add-chooseAssignment-previous" class="btn op-btn btn-primary" href="#" role="button" rbac-show="rbac-page1">
               <span app-label-key="fcf.assignment.Prev" >Previous</span>
             </button>
@@ -271,11 +285,11 @@
                               <p><span app-label-key="fcf.assignment.addAssignment.Choose.ActivityNameDesc" >Please use a name everyone associated with the activity will organize</span></p>
                               <div style="text-align:right;">Characters remaining: <span style="font-weight: bold;" id="activity_name_limit">240</span></div>
                               <div class="form-group">
-                                <input type="text" oninput="var left = 240-this.value.length; if (left < 0) { left = 'Too many characters!'; } document.getElementById('activity_name_limit').innerHTML = left;" class="form-control" placeholder="Activity Name" app-label-key="fcf.assignment.Choose.ActivityName" name="activity_name" id="activity_name" required >
+                                <input type="text" oninput="var left = 240-this.value.length; if (left < 0) { left = 'Too many characters! (remove '+ (-1*left) +' characters)'; document.getElementById('activity_name_limit').style.color = '#F44336' } else { document.getElementById('activity_name_limit').style.color = '' } document.getElementById('activity_name_limit').innerHTML = left;" class="form-control" placeholder="Activity Name" app-label-key="fcf.assignment.Choose.ActivityName" name="activity_name" id="activity_name" required >
                               </div>
                               <div style="text-align:right;">Characters remaining: <span style="font-weight: bold;" id="activity_name_govt_limit">240</span></div>
                               <div class="form-group">
-                                <input type="text" oninput="var left = 240-this.value.length; if (left < 0) { left = 'Too many characters!'; } document.getElementById('activity_name_govt_limit').innerHTML = left;" class="form-control" placeholder="Activity Name (Govt)" app-label-key="fcf.assignment.Choose.ActivityNameGovt" name="activity_name_govt" id="activity_name_alt" >
+                                <input type="text" oninput="var left = 240-this.value.length; if (left < 0) { left = 'Too many characters! (remove '+ (-1*left) +' characters)'; document.getElementById('activity_name_govt_limit').style.color = '#F44336' } else { document.getElementById('activity_name_govt_limit').style.color = '' } document.getElementById('activity_name_govt_limit').innerHTML = left;" class="form-control" placeholder="Activity Name (Govt)" app-label-key="fcf.assignment.Choose.ActivityNameGovt" name="activity_name_govt" id="activity_name_alt" >
                               </div>
                            
                               <!---->
@@ -324,11 +338,11 @@
                                       <p><span app-label-key="fcf.assignment.Choose.DescriptionDesc" >Please describe this activity using the team objective as guideline </span></p>
                                       <div style="text-align:right;">Characters remaining: <span style="font-weight: bold;" id="activityDescription_limit">240</span></div>
                                       <div class="form-group">
-                                        <textarea type="textarea" oninput="var left = 240-this.value.length; if (left < 0) { left = 'Too many characters!'; } document.getElementById('activityDescription_limit').innerHTML = left;" class="form-control" placeholder="Description" id="activityDescription" app-label-key="fcf.assignment.Choose.Description" name="activity_description"></textarea>
+                                        <textarea type="textarea" oninput="var left = 240-this.value.length; if (left < 0) { left = 'Too many characters! (remove '+ (-1*left) +' characters)'; document.getElementById('activityDescription_limit').style.color = '#F44336' } else { document.getElementById('activityDescription_limit').style.color = '' } document.getElementById('activityDescription_limit').innerHTML = left;" class="form-control" placeholder="Description" id="activityDescription" app-label-key="fcf.assignment.Choose.Description" name="activity_description"></textarea>
                                       </div>
                                       <div style="text-align:right;">Characters remaining: <span style="font-weight: bold;" id="activityDescriptionGovt_limit">240</span></div>
                                       <div class="form-group">
-                                        <textarea type="textarea" oninput="var left = 240-this.value.length; if (left < 0) { left = 'Too many characters!'; } document.getElementById('activityDescriptionGovt_limit').innerHTML = left;" class="form-control" placeholder="Description (Govt)" id="activityDescriptionGovt" app-label-key="fcf.assignment.Choose.DescriptionGovt" name="activity_description_govt"></textarea>
+                                        <textarea type="textarea" oninput="var left = 240-this.value.length; if (left < 0) { left = 'Too many characters! (remove '+ (-1*left) +' characters)'; document.getElementById('activityDescriptionGovt_limit').style.color = '#F44336' } else { document.getElementById('activityDescriptionGovt_limit').style.color = '' } document.getElementById('activityDescriptionGovt_limit').innerHTML = left;" class="form-control" placeholder="Description (Govt)" id="activityDescriptionGovt" app-label-key="fcf.assignment.Choose.DescriptionGovt" name="activity_description_govt"></textarea>
                                       </div>
                                   </div>
                               </div>
@@ -349,248 +363,202 @@
         </div>
 
       <!--PAGE 3-->
-                <div id='fcf-activity-add-report' class="off-top20 rbac-display rbac-page3" resize-adj="-20" style="display:none">
-                      <div class="fcf-blue-wrap col-sm-12">
+                <div id='fcf-activity-add-report' class="container rbac-display rbac-page3" style="display:none; padding-bottom: 50px;">
+                      <div class="overflow-h fcf-blue-wrap col-sm-12">
                             <!--Top-->
                               <div class="row op-container">
 
-                                <div class="col-sm-12 "><p class="pull-left" ><a href="http://www.thaiconnections.org/OSticket/upload/open.php"><i class="fa fa-question-circle" aria-hidden="true"></i><span class="light-txt" app-label-key="fcf.help">Help</span></a></p><p class="pull-right light-txt" app-label-key="fcf.activity.add.report.step">Step 3 of 3</p></div>
+                                <div class="col-sm-12 ">
+                                    <!-- <p class="pull-left" >
+                                        <a href="http://www.thaiconnections.org/OSticket/upload/open.php"><i class="fa fa-question-circle" aria-hidden="true"></i><span class="light-txt" app-label-key="fcf.help">Help</span></a>
+                                    </p> -->
+                                    <p class="pull-right light-txt" app-label-key="fcf.activity.add.report.step">Step 3 of 3</p>
+                                </div>
 
                               </div>
                             <!--End Top-->
-                            <!--Content-->      
-                              <div id="fcf-activity-content-section" class="col-sm-12 nopadL" resize-adj="-95">
-                                    <!--All Activity list-->
-                                    <div class="col-sm-3">
-                                      <div class="col-sm-12 light-blue-wrap fcf-activity-contentsection-activityList" resize-adj="-115" >
-                                        <div class="row off-top10">
+                            <!--Content-->
+                              <div class="row op-container">
+                                  <div class="col-sm-12 ">    
+                                      <div id="fcf-activity-content-section">
+                                            <!--All Activity list-->
+                                            <div class="col-sm-3">
+                                              <div class="col-sm-12 light-blue-wrap fcf-activity-contentsection-activityList">
+                                                <div class="row off-top10">
 
-                                        <label class="fcf-activity-activityList-label padleft15 off-top10 "><span app-label-key="fcf.activity.report.AllActivities" >All Activities for </span><span class='fcf-activity-team-name'>[TEAM]</span></label>
+                                                <label class="fcf-activity-activityList-label padleft15 off-top10 "><span app-label-key="fcf.activity.report.AllActivities" >Activities for</span> <span class='fcf-activity-team-name'>[TEAM]</span></label>
 
-                                        <div id="lc-activity" class="fcf-activity-report-activities op-container" style="padding: 0 15px; margin-right: 15px;" resize-adj="-175">
-                                          <!-- activities.forEach(function(activity) {  -->
-                                          
-                                          <div class="imgleft fcf-activity-list-item" obj-embed="activity" >
-                                            <div class="row op-container">
-                                                <div class="col">
-                                                  <div class="col-sm-10">
-                                                    <p><span class="blue font16">[[= activity.attr("activity_name") ]]</span><br/><span class="blue fcf-activity-activity-project-name">[[= ProjectName ]]</span></p>
-                                                    <p class="fcf-activity-tag-list" activityID="[[= activity.attr('id') ]]">
-
-                            <!-- 
-
-                            var displayedTags = []; 
-                            taggedPeople.forEach(function(personID){
-
-                              var foundPerson = null;
-                              if (teammates.each) {
-                                teammates.each(function(mate){
-                                
-                                  if (mate.IDPerson == personID) {
-                                    foundPerson = mate;
-                                  }
-                                })
-                              }
-
-                              if (foundPerson) {   
-
-                                if (foundPerson.IDPerson != whoami.IDPerson) {
-
-                                  displayedTags.push(foundPerson.display_name); 
-
-                                } else {
-                                  displayedTags.unshift(' <span class="orange">'+foundPerson.display_name+'</span>');
-                                }
-
-                              }
-
-                            })
-
-                            --> [[== displayedTags.join(', ') ]] <span class="orange mockup">Tum</span></p>
-                                                  </div>
-                                                  <div class="col-sm-2"><i class="fa fa-tag fa-2x fa-flip-horizontal" activityID="[[= activity.attr('id') ]]" style="color: #F06415;"></i></div>
-                                                </div>                      
-                      
-                      </div>  
-                                       
-                                          </div>
-                                          
-                                          <!-- })  -->
-
-                                        
-                    
-                                        </div>                                                                    
-                                        </div> 
-                                      </div>
-                                    </div>
-                                    <!--END All Activity list-->
-
-
-                                    <!--Activity Report--> 
-                                    <div class="col-sm-9 light-blue-wrap">
-                                      <div class="row off-top10" resize-adj="-145">
-
-                                        <!--Uploaded Photos-->
-                                        <div class="col-sm-4">
-                                          <div class="row op-container">
-                                            <div class="col-sm-12 off-top10">
-
-                                              <label class="" app-label-key="fcf.assignment.report.currentActivityReport">Current Activity Report</label>
-
-                                              <p><span class="orange fcf-activity-activity-name">[Activity Name]</span>   <span class="blue"><span class="fcf-activity-activity-startdate">10/1/14</span> - <span class="fcf-activity-activity-enddate">Ongoing</span></span></p>
-                                              <p class="blue"><span class="fcf-activity-activity-project-name">[Project Name]</span></br><span class="fcf-activity-activity-team-name">[Team Name]</span></p>
+                                                <div id="lc-activity" class="fcf-activity-report-activities op-container" style="padding: 0 15px; margin-right: 15px;">
+                                                    <!-- activities.forEach(function(activity) {  -->
+                                                    <div class="imgleft fcf-activity-list-item" activity-id="[[= activity.attr('id') ]]" obj-embed="activity" >
+                                                        <b><span class="blue font16">[[= activity.attr("activity_name") ]]</span></b><br/>
+                                                        <span class="font12 opacity60">[[= activity.attr("startDate") ]] - [[= activity.attr("endDate") ]]</span>
+                                                    </div>
+                                                    <!-- })  -->
+                                                </div>                                                                    
+                                                </div> 
+                                              </div>
                                             </div>
-                                          </div>
-
-                                          <div id="uploaded-img" class="col-sm-12 padrigt1" resize-adj="-276">
-                                            <label class="off-top10">Uploaded Photos</label>
-                                            <div id="upload-scroll" class="fcf-activity-report-activity-images col-sm-12  " resize-adj="-341">
-                                             
-                                              <!-- images.forEach(function(image){ --> 
-                                              
-                                              <div class="imgleft fcf-activity-image-list-item" obj-embed="image" >
-                                                  <div class="row">
-                                                    <%# <div class="col-sm-12"> %>
-                                                      <%# <div class="row"> %>
-                                                        <div class="col-sm-5 fcf-image-embed" opimage-url="/images/fcf_activities/img2.jpg"><img src="/images/fcf_activities/img2.jpg"></div>
-                                                        <div class="col-sm-7 op-css-nopadL">
-                                                          <label class="blue">
-                                                              [[= image.attr("caption") ]]
-                                                          </label>
-                                                          <p class="fcf-activity-image-tag-list" imageID="[[= image.attr('id') ]]"><span class="blue bgfont" app-label-key="fcf.activity.add.report.PeopleInPhoto" >People in this photo:</span><br>
-<!-- 
-
-var displayedTags = []; 
-taggedPeople.forEach(function(personID){
-
-    var foundPerson = null;
-    if (teammates.each) {
-      teammates.each(function(mate){
-      
-        if (mate.IDPerson == personID) {
-          foundPerson = mate;
-        }
-      })
-    } else {
-      console.error('teammates.each() not a valid function!');
-    }
-
-    if (foundPerson) {   
-
-        if (foundPerson.IDPerson != whoami.IDPerson) {
-
-            displayedTags.push(foundPerson.display_name); 
-
-        } else {
-            displayedTags.unshift(' <span class="orange">'+foundPerson.display_name+'</span>');
-        }
-
-    }
-
-})
-
-]] [[== displayedTags.join(', ') ]]  <!--
+                                            <!--END All Activity list-->
 
 
---> 
+                                            <!--Activity Report--> 
+                                            <div class="col-sm-9 light-blue-wrap">
+                                              <div class="row">
 
-                                                          </p>
-                                                        </div>                            
-                                                      </div>
-                                                    <%# </div>  
-                                                  </div> %>
-                                              </div>
-                                              
-                                              <!-- })  -->
+                                                <!--Uploaded Photos-->
+                                                <div class="col-sm-4">
+                                                  <div class="row op-container">
+                                                    <div class="col-sm-12 off-top10">
 
+                                                        <label class="off-top10">Uploaded Photos</label>
+                                                      <!-- <label class="off-top10" app-label-key="fcf.assignment.report.currentActivityReport">Current Activity Report</label> -->
 
-                                              
-                                            </div>                                                                    
-                                          </div>
-                      
-                                        </div>
-                                        <!--/Uploaded Photos-->
-                                        <!--Big Image-->
-                                        <div class="col-sm-8">
-                                          <div class="row" style="overflow: visible;">
-                                              <div class="col-sm-5 nomargin">
-                                                <div id="fcf-activity-image-upload" class="dropzone op-dropzone dz-clickable" style="margin-top: 30px; min-height: 230px;" >
-                                                    <div class="dz-message fcf-activity-icon-picture" style="margin-top: 45px !important;">
-                                                      <p class="first" app-label-key="fcf.activity.add.report.DragImageHere">Drag image here</p>
-                                                      <p app-label-key="fcf.activity.add.report.or">- or -</p>
-                                                      <p class="opsportal-margin-top"><a class="" title="Click to open the file browser" href="#" app-label-key="fcf.activity.add.report.ClickToOpenFileBrowser">Click to open the file browser</a></p>
-                                                    </div>
-                                                    <div class="preview-template" style="display: none;"></div>
-                                                    <img src="" class="fcf-activity-image-uploaded" width="344" />
-
-                                                    <!-- <div class="fcf-activity-image-uploaded"></div> -->
-                                                </div>
-                                              </div>
-                                              <!--/END Big Image-->
-                                              <!--Form-->
-
-                                              <div class="col-sm-7 nomargin">
-                                                <form class="fcf-activity-image-form">
-                                                  <input type="hidden" class="form-control" id="image-image" name="image" />
-                                                  <input type="hidden" class="form-control" id="image-activity" name="activity" />
-                                                  <div id="dc" class="">
-                                                    <div class="form-group">
-                                                      <label style="padding-top: 5px;" app-label-key="fcf.activity.image.form.caption" for="image-caption">Caption</label><span style="padding-top: 5px;" class="pull-right">Characters remaining: <span style="font-weight: bold;" id="charCount">240</span></span>
-                                                      <textarea oninput="var left = 240-this.value.length; if (left < 0) { left = 'Too many characters!'; } document.getElementById('charCount').innerHTML = left;" style="height: 100px;" class="form-control" id="image-caption" placeholder='Caption' name="caption" app-label-key="fcf.activity.image.form.caption"></textarea>
-                                                      <label style="padding-top: 5px;" app-label-key="fcf.activity.image.form.caption_govt" for="image-caption-govt">Activity Location</label>
-                                                      <input type="text" class="form-control" id="image-caption-govt"  placeholder='Activity Location' name="caption_govt" app-label-key="fcf.activity.image.form.caption_govt" />
-                                                      <label style="padding-top: 5px;" app-label-key="fcf.activity.image.form.date" for="image-date">Date of Photo</label>
-                                                      <input type="text" class="form-control" id="image-date" name="date" placeholder="Date of Photo" app-label-key="fcf.activity.image.form.date" />
+                                                      <!-- <p><span class="orange fcf-activity-activity-name">[Activity Name]</span>   <span class="blue"><span class="fcf-activity-activity-startdate">10/1/14</span> - <span class="fcf-activity-activity-enddate">Ongoing</span></span></p> -->
+                                                      <!-- <p class="blue"><span class="fcf-activity-activity-project-name">[Project Name]</span></br><span class="fcf-activity-activity-team-name">[Team Name]</span></p> -->
                                                     </div>
                                                   </div>
-                                                </form>
-                                              </div>
-                                          </div>
-                      
-                                          <!--Profile List-->
-                                          <label app-label-key="fcf.activity.image.form.tags" for="image-tags">People in Photo</label>
-                                          <div class="form-group">
-                                            <div type="text" id="image-tags" name="tags"  ><span app-label-key="fcf.activity.image.form.tags">People in Photo</span></div>
-                                          </div>
-                                          <div id="profile-list" class="col-sm-12" style="padding-bottom: 10px;">
-                                              <div id="profilelist-scroll" resize-adj="-580">
-                                                <div class="col-sm-12">
-                                                  <ul class="fcf-activitiy-people-list">
-                                                  <!-- people.each(function(person){   -->
-                                                  <li class="fcf-activity-people-objects" obj-embed="person" data-person-id="[[= person.attr('IDPerson') ]]">
-                                                        <img src="" class="floatleft" width="66" ><strong>[[= person.attr("display_name") ]]</strong><br>Staff
-                                                  </li>
-                                                  <!-- }) -->
-                                                </ul>
+
+                                                  <div id="uploaded-img" class="col-sm-12 padrigt1">
+                                                    <div id="upload-scroll" class="off-top10 fcf-activity-report-activity-images col-sm-12">
+                                                     
+                                                      <!-- images.forEach(function(image){ --> 
+                                                      
+                                                      <div class="imgleft fcf-activity-image-list-item status-[[= image.attr('status') ]]" obj-embed="image" >
+                                                          <div class="">
+                                                            <div class="pad10">
+                                                            <%# <div class="col-sm-12"> %>
+                                                              <%# <div class="row"> %>
+                                                                <div class="fcf-image-embed" opimage-url="/images/fcf_activities/img2.jpg"><img width="80" height="80" src="/images/fcf_activities/img2.jpg"></div>
+                                                                <div class="op-css-nopadL">
+                                                                  <b>[[= image.date ]]</b><br/>
+                                                                  <span class="blue captionTruncated-[[= image.attr('id') ]]">
+                                                                      [[= image.captionTruncated ]]
+                                                                  </span>
+                                                                  <div style="display: none" class="fcf-activity-image-tag-list" imageID="[[= image.attr('id') ]]"><span class="blue bgfont" app-label-key="fcf.activity.add.report.PeopleInPhoto" >People in this photo:</span><br>
+        <!-- 
+
+        var displayedTags = []; 
+        taggedPeople.forEach(function(personID){
+
+            var foundPerson = null;
+            if (teammates.each) {
+              teammates.each(function(mate){
+              
+                if (mate.IDPerson == personID) {
+                  foundPerson = mate;
+                }
+              })
+            } else {
+              console.error('teammates.each() not a valid function!');
+            }
+
+            if (foundPerson) {   
+
+                if (foundPerson.IDPerson != whoami.IDPerson) {
+
+                    displayedTags.push(foundPerson.display_name); 
+
+                } else {
+                    displayedTags.unshift(' <span class="orange">'+foundPerson.display_name+'</span>');
+                }
+
+            }
+
+        })
+
+        ]] [[== displayedTags.join(', ') ]]  <!--
+
+
+        --> 
+
+                                                                  </div>
+                                                                  <div class="clear"></div>
+                                                                </div>                            
+                                                              </div>
+                                                            <%# </div>  %>
+                                                          </div>
+                                                      </div>
+                                                      
+                                                      <!-- })  -->
+
+
+                                                      
+                                                    </div>                                                                    
+                                                  </div>
+                              
                                                 </div>
+                                                <!--/Uploaded Photos-->
+                                                <!--Big Image-->
+                                                <div class="col-sm-8">
+                                                  <div class="row" style="margin-top: 45px; overflow: visible;">
+                                                      <!-- <div class="col-sm-5 nomargin">
+                                                      </div> -->
+                                                      <!--/END Big Image-->
+                                                      <!--Form-->
+
+                                                      <div id="formColumn" class="col-sm-12 nomargin">
+                                                          <div id="processApprovalMsg"></div>
+                                                          <div id="fcf-activity-image-upload" class="dropzone op-dropzone dz-clickable">
+                                                              <div class="dz-message">
+                                                                <p class="first" app-label-key="fcf.activity.add.report.DragImageHere" style="margin-top: 45px !important;">Drag image here</p>
+                                                                <p app-label-key="fcf.activity.add.report.or">- or -</p>
+                                                                <p class="opsportal-margin-top"><a class="btn btn-primary" style="opacity: 1;" title="Click to open the file browser" href="#" app-label-key="fcf.activity.add.report.ClickToOpenFileBrowser">Click to open the file browser</a></p>
+                                                              </div>
+                                                              <div class="preview-template" style="display: none;"></div>
+                                                              <img src="" class="fcf-activity-image-uploaded" width="344" />
+
+                                                              <!-- <div class="fcf-activity-image-uploaded"></div> -->
+                                                          </div>
+                                                        <form class="fcf-activity-image-form">
+                                                          <input type="hidden" class="form-control" id="image-image" name="image" />
+                                                          <input type="hidden" class="form-control" id="image-activity" name="activity" />
+                                                          <div id="dc" class="">
+                                                            <div class="form-group">
+                                                              <label style="padding-top: 5px;" app-label-key="fcf.activity.image.form.tags" for="image-tags">People in Photo</label>
+                                                              <div id="image-tags" name="tags"></div>
+                                                              <label style="padding-top: 5px;" app-label-key="fcf.activity.image.form.caption" for="image-caption">Caption</label><span style="padding-top: 5px;" class="pull-right">Characters remaining: <span style="font-weight: bold;" id="charCount">240</span></span>
+                                                              <textarea oninput="var left = 240-this.value.length; if (left < 0) { left = 'Too many characters! (remove '+ (-1*left) +' characters)'; document.getElementById('charCount').style.color = '#F44336' } else { document.getElementById('charCount').style.color = '' } document.getElementById('charCount').innerHTML = left;" style="height: 100px;" class="form-control" id="image-caption" placeholder='Caption' name="caption" app-label-key="fcf.activity.image.form.caption"></textarea>
+                                                              <div class="row" style="overflow: visible;">
+                                                                  <div class="col-sm-6">
+                                                                      <label style="padding-top: 5px;" app-label-key="fcf.activity.image.form.caption_govt" for="image-caption-govt">Activity Location</label>
+                                                                      <input type="text" class="form-control" id="image-caption-govt"  placeholder='Activity Location' name="caption_govt" app-label-key="fcf.activity.image.form.caption_govt" />
+                                                                  </div>
+                                                                  <div class="col-sm-6">
+                                                                      <label style="padding-top: 5px;" app-label-key="fcf.activity.image.form.date" for="image-date">Date of Photo</label>
+                                                                      <input type="text" class="form-control" id="image-date" name="date" placeholder="Date of Photo" app-label-key="fcf.activity.image.form.date" />
+                                                                  </div>
+                                                              </div>
+                                                            </div>
+                                                          </div>
+                                                        </form>
+                                                        <div class="align-r">
+                                                          
+                                                            <button id="fcf-activity-image-form-delete" type="button" class="btn op-btn btn-danger pull-left"><span app-label-key="fcf.assignment.imageform.Delete" >Delete</span></button>
+                                                            <button id="fcf-activity-image-form-cancel" type="submit" class="btn op-btn btn-link" style="color: black; text-decoration: underline;"><span app-label-key="fcf.assignment.imageform.Cancel" >Cancel</span></button>
+                                                            <button id="fcf-activity-image-form-save" type="submit" class="btn op-btn btn-primary" ><span app-label-key="fcf.assignment.imageform.SaveImage" >Save Image</span></button>
+
+                                                     
+                                                        </div>
+
+                                                      </div>
+                                                  </div>
+                                                  <!--/END Form-->         
+                                                </div>
+                                                <!--/Big Image-->
                                               </div>
-                                          </div>
-                                          <!--/Profile List-->
-                                          <div class="col-sm-12 align-r">
-                                            
-
-                                              <button id="fcf-activity-image-form-delete" type="button" class="btn op-btn btn-danger pull-left"><span app-label-key="fcf.assignment.imageform.Delete" >Delete</span></button>
-                                              <button id="fcf-activity-image-form-cancel" type="submit" class="btn op-btn btn-link" style="color: black; text-decoration: underline;"><span app-label-key="fcf.assignment.imageform.Cancel" >Cancel</span></button>
-                                              <button id="fcf-activity-image-form-save" type="submit" class="btn op-btn btn-primary" ><span app-label-key="fcf.assignment.imageform.SaveImage" >Save Image</span></button>
-
-                                       
-                                          </div>
-                                          <!--/END Form-->         
-                                        </div>
-                                        <!--/Big Image-->
+                                            </div>
+                                            <!--END Activity Report-->
                                       </div>
-                                    </div>
-                                    <!--END Activity Report-->
-                                          
-                                
+                                  </div>
                               </div>
+                              <div id="fcf-activity-actionsbtn" class="form-inline col-sm-12 align-r ">
+
+                                  <button id="fcf-activity-image-form-nav-previous" type="submit" class="btn op-btn btn-primary"><span app-label-key="fcf.assignment.Prev" >Previous</span></button>
+                                  <button id="fcf-activity-image-form-nav-finish" type="submit" class="btn op-btn btn-primary" ><span app-label-key="fcf.assignment.finish" >Finish</span></button>
+
+                              </div>           
                             <!--/Content-->
-                            <div id="fcf-activity-actionsbtn" class="form-inline col-sm-12 align-r ">
-
-                                <button id="fcf-activity-image-form-nav-previous" type="submit" class="btn op-btn btn-primary"><span app-label-key="fcf.assignment.Prev" >Previous</span></button>
-                                <button id="fcf-activity-image-form-nav-finish" type="submit" class="btn op-btn btn-primary" ><span app-label-key="fcf.assignment.finish" >Finish</span></button>
-
-                          </div>           
                       </div>
 
                 </div>

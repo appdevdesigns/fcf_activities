@@ -1286,6 +1286,7 @@ console.error(err);
                     FCFActivityImages.find(filter)
                     .populate('activity')
                     .populate('translations')
+                    .populate('taggedPeople')
                     .then((list)=>{
 
                         allActivities = list;
@@ -1297,6 +1298,20 @@ console.error(err);
                             copyFields.forEach((f)=>{
                                 a[f] = simpleA[f];
                             })
+                            // simplify the tagged people lists while we are at it
+                            var simplePeople = [];
+                            a.taggedPeople.forEach((t)=>{
+                                var display_name = t.NameFirstEng + " " + t.NameLastEng;
+                            
+                                var simplePerson = {
+                                    IDPerson: t.IDPerson,
+                                    display_name: display_name
+                                };
+                                simplePeople.push(simplePerson);
+                            
+                            });
+                            a.taggedPeople = undefined; // we cannot delete but we can empty it at least
+                            a.tagged_people = simplePeople;
                         })
 
                         next();

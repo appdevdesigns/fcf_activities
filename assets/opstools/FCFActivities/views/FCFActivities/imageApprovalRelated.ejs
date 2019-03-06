@@ -4,32 +4,27 @@
 #language_code:en
 -->
 <div class="op-widget-masthead">
-  <h3><span app-label-key="fcf.activityapproval.submittedBy">Submitted By:</span></h3>
+    <h3><span app-label-key="fcf.activityapproval.submittedBy">Submitted By:</span></h3>
 </div>
 <!--Avatar & Team-->
-<div class="row op-container">
-  <div class="col-xs-6 col-sm-3 col-lg-6 nopadR">
-        <img class="op-avatar" src="<%= user.avatar %>" alt="Responsive image" >
-    </div>
-    <div class="col-xs-6 col-sm-9 col-lg-6 nopadR">
-         <h3 class="nomargintop"><%= user.displayName %></h2>
-         <p><strong><span app-label-key="fcf.imageapproval.teams">Team(s):</span></strong></p>
-         <ul class="op-list">
+<div class="op-container">
+    <div>
+        <h3 class="nomargintop"><%= user.displayName %></h3>
+        <p><strong><span app-label-key="fcf.imageapproval.teams">Team(s):</span></strong></p>
+        <ul style="margin-left: 20px;">
             <% user.teams.forEach(function(team){ %>
-
-              <li><%= team.MinistryDisplayName %></li>
-
+            <li><%= team.MinistryDisplayName %></li>
             <% }) %>
         </ul>
     </div>                        
 </div>
 <!--/Avatar & Team-->
 <div class="op-container">
-  <h5 class="op-margin-bottom"><span app-label-key="fcf.imageapproval.createdOn">Created On: <%= createdAt %></span></h5>
+    <h5 class="op-margin-bottom">
+        <span app-label-key="fcf.imageapproval.createdOn">Created On:</span> <%= createdAt %>
+    </h5>
     <div class="op-container off-botm20">
         <label class="lbl-title"><span app-label-key="fcf.imageapproval.forActivity">For Activity:</span></label>
-        <p><span><strong><%= activity.activity_name %></strong><br><%= activity.activity_description %></span></p>
-        
+        <p><strong><%= activity.activity_name %></strong><br><%= activity.activity_description %></p>
     </div>
-                     
 </div>

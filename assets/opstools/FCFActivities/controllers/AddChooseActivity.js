@@ -36,6 +36,7 @@ steal(
 							this.selectedTeam = null; // which team are we displaying results for?
 							this.listActivities = null; // track all the activities we've loaded.  
 							this.selectedActivity = null; // which activity was selected.
+							this.listActivitiesFull = null; // we will store all activites here so we can filter and reveal later
 
 							this.element.hide();
 
@@ -148,7 +149,15 @@ steal(
 								},
 								dataToTerm: function (data) {
 									if (data) {
-										return data.activity_name + ', ' + data.createdBy;
+										if (self.showCurrent()) {
+											var now = new Date();
+											var endDate = new Date(data.date_end);
+											if (data.date_end == "" || endDate.getTime() > now.getTime()) {
+												return data.activity_name;
+											}
+										} else {
+											return data.activity_name;
+										}
 									} else {
 										// console.error(' Ministry Team Row not setup properly.');
 										return '';
@@ -246,12 +255,9 @@ steal(
 								})
 								.then(function (list) {
 
-									self.listActivities = list;
-
-									// tell our Filter to load these Activities
-									self.Filter.load(list);
-									self.Filter.ready();
-
+									self.listActivitiesFull = list;
+									self.setUpTable();
+									
 								});
 
 
@@ -341,6 +347,31 @@ steal(
 						},
 
 
+						setUpTable: function() {
+							var self = this;
+							
+							var list = self.listActivitiesFull;
+							
+							if (self.showCurrent()) {
+								list = list.filter((value, index, array) => {
+									let now = new Date();
+									let endDate = new Date(value.date_end);
+									if (value.date_end == "" || endDate.getTime() > now.getTime()) {
+										return true;
+									}
+								})
+							}
+
+							console.log(list);
+
+							self.listActivities = list;
+
+							// tell our Filter to load these Activities
+							self.Filter.load(list);
+							self.Filter.ready();
+
+						},
+
 
 						show: function () {
 
@@ -349,6 +380,17 @@ steal(
 
 							// make sure we resetView() on bootstraptable
 							this.Filter.resetView();
+						},
+						
+						
+						
+						showCurrent: function() {
+							this.showCurrentCheckbox = this.element.find("#showCurrent");
+							if (this.showCurrentCheckbox[0]) {
+								return this.showCurrentCheckbox[0].checked;
+							} else {
+								return true;
+							}
 						},
 
 
@@ -506,6 +548,10 @@ steal(
 							this.formClear();
 							this.modalAdd.modal('hide');
 							ev.preventDefault();
+						},
+						
+						"#showCurrent click": function ($el, ev) {
+							this.setUpTable();
 						}
 
 

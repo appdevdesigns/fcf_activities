@@ -5,8 +5,8 @@
 }
 
 .fixed-table-body {
-    overflow: auto;
-    height: 160px;
+    /* overflow: auto; */
+    /* height: 160px; */
 }
 
 .fcf-list-rowH4 {
@@ -35,13 +35,61 @@
     background-color: #d9edf7;
 }
 
+.imgleft.fcf-activity-image-list-item.status-approved::before, .imgleft.fcf-activity-image-list-item.status-ready::before {
+	content: "\f00c";
+	font-family: fontawesome;
+	color: white;
+	background: #4caf50;
+	width: 25px;
+	height: 25px;
+	display: block;
+	text-align: center;
+	border-radius: 100%;
+	position: absolute;
+	margin: 5px 0 0 5px;
+	z-index: 100;
+	border: 2px solid white;
+	box-shadow: 2px 2px 2px rgba(0,0,0,0.6);
+	line-height: 23px;	
+}
+.imgleft.fcf-activity-image-list-item.status-denied::before {
+    content: "\f12a";
+    font-family: fontawesome;
+    color: white;
+    background: #F44336;
+    width: 25px;
+    height: 25px;
+    display: block;
+    text-align: center;
+    border-radius: 100%;
+    position: absolute;
+    margin: 5px 0 0 5px;
+    z-index: 100;
+    border: 2px solid white;
+    box-shadow: 2px 2px 2px rgba(0,0,0,0.6);
+	line-height: 23px;
+}
+.font12 {
+	font-size: 12px;
+}
+.opacity60 {
+	opacity: 0.6;
+}
+.pad10 {
+	padding: 10px;
+}
+.clear {
+	clear: both;
+}
 
 .fcf-team-list tr.selected,
 .fcf-activity-list tr.selected {
     background-color: #d9edf7;
 }
 
-
+.opsportal-area-activity-uploader {
+	margin: 25px;
+}
 
 .fcf-activity-report-activities,
 .fcf-activity-report-activity-images,
@@ -49,12 +97,18 @@
     overflow:auto;
 }
 
-
-/*.fcf-activity-list-item,
-.fcf-activity-image-list-item {
-    height: 100px;
+.fcf-activity-report-activity-images {
+	padding-left: 0 !important;
 }
-*/
+
+
+.fcf-activity-list-item {
+    padding: 10px; 
+}
+
+.fcf-activity-list-item.active, .fcf-activity-image-list-item.active {
+	background: rgba(0, 113, 184, 0.1);
+}
 
 .fcf-activity-list-image {
     margin-right: 20px;
@@ -72,24 +126,6 @@
     cursor: default;
     white-space: nowrap;
 }
-
-
-
-.dropzone .fcf-activity-icon-picture {
-    background-color: transparent;
-    background-image: url("/images/fcf_activities/icon_picture_activity.jpg");
-    background-position: center top;
-    background-repeat: no-repeat;
-    background-size: auto 100px;
-    border: 1px solid transparent;
-    min-height: 100% !important;
-    opacity: 0.5;
-    position: relative;
-    width: 100% !important;
-
-}
-
-
 
 body {
 	margin: 0;
@@ -163,19 +199,28 @@ body {
 /*Styles FCF Activities Page 3*/
 
 .imgleft {
-	border-bottom:#0071be 2px solid;
+	border-bottom:rgba(0, 113, 184, 0.2) 1px solid;
 	overflow:hidden;
 	cursor:pointer;
-	}
+}
 	
 .imgleft .row div:nth-child(3) {
 	text-align:right;
 	padding-right:0;
 }
+
+.fcf-image-embed {
+	float: left;
+	margin-right: 10px;
+}
 	
-.imgleft img{width:100%;}	
+.imgleft img{
+	/* width:100%; */
+	object-fit: cover;
+	border-radius: 5px;
+}	
 	
-.imgleft .row{padding-top:15px;padding-bottom:10px}	
+.imgleft .row{padding:10px 0;}	
 
 .imgleft p{font-size:13px;}
 
@@ -317,10 +362,20 @@ body {
 
 #fcf-activity-image-upload {
 	padding-top: 0px; 
+	margin-top: 0px;
+	min-height: 230px;
+	border: 0;
 	padding-bottom: 0px; 
 	padding: 0px;
-	height:150px; /*Fixed Width for the Container of DropZone*/
-/*	width:331px; Fixed Height for the Container of DropZone*/
+	height:150px; 
+	color: white;
+	background: #666;
+	text-align: center;
+}
+
+.op-css-nopadL {
+	margin-left: 0 !important;
+	padding-left: 0 !important;
 }
 
 
@@ -334,9 +389,10 @@ body {
 }
 .octobubble {
 	position: absolute;
-	padding: 10px 0px 10px 50px;
+	padding: 10px;
 	border-radius: 30px;
-	background: #40403F url(https://adroit.appdevdesigns.net/images/FCFCore/fcf-logo.jpg) 15px 11px / 30px 33px no-repeat;
+	background: #40403F;
+	text-align: center;
 	color: white;
 	top: 35px;
 	left: 0px;
