@@ -1282,7 +1282,7 @@ dzImage.prop('src', '').hide();
 											list = list.filter(function(value, index, array) {
 												var now = new Date();
 												var endDate = new Date(value.date_end);
-												if (value.date_end == "" || endDate.getTime() > now.getTime()) {
+												if (value.date_end == "" || value.date_end == null || endDate.getTime() > now.getTime()) {
 													return true;
 												}
 											})
