@@ -53,8 +53,8 @@
             </div>
             <div class="col-sm-9">
                 <!--List of people with closed button-->
-                <% taggedPeople.forEach(function(person, idx, array){ %>
-                    <%= person.display_name %><% if (idx !== array.length - 1) { %>, <% } %>
+                <% data.taggedPeopleNames.forEach(function(person, idx, array){ %>
+                    <%= person %><% if (idx !== array.length - 1) { %>, <% } %>
                 <%  }) %>
                 <!--/End here-->
             </div>
