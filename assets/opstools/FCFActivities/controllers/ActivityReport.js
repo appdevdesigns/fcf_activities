@@ -1279,9 +1279,9 @@ dzImage.prop('src', '').hide();
 											item.endDate = self.toDate(item.date_end);
 										});
 										if (showCurrent) {
-											list = list.filter((value, index, array) => {
-												let now = new Date();
-												let endDate = new Date(value.date_end);
+											list = list.filter(function(value, index, array) {
+												var now = new Date();
+												var endDate = new Date(value.date_end);
 												if (value.date_end == "" || endDate.getTime() > now.getTime()) {
 													return true;
 												}
@@ -1642,7 +1642,7 @@ dzImage.prop('src', '').hide();
 								var list = list.data || list;
 
 								self.clearImageList();
-								list.forEach((row) => {
+								list.forEach(function(row) {
 									if (row.caption.length > 70) {
 								    	row.captionTruncated = row.caption.substring(0,55);
 										row.captionTruncated = row.captionTruncated.substring(0, Math.min(row.captionTruncated.length, row.captionTruncated.lastIndexOf(" ")))+'...';
