@@ -1404,25 +1404,30 @@ console.error(err);
                 // lookup activities translations:
                 (next)=>{
 
-                    var activityIDs = allActivities.map((a)=>{ return a.activity.id; })
+                    // only search images with .activity populated
+                    var activityIDs = allActivities.filter((a)=>{ return a.activity; }).map((a)=>{ return a.activity.id; });
+
                     FCFActivity.find({id:activityIDs})
                     .populate('translations')
                     .then((list)=>{
 
+                        list = list || [];
+
                         var translateIt = (indx, cb) => {
+
                             if (indx >= list.length) {
                                 cb();
                             } else {
 
                                 var entry = list[indx];
-                                if (entry.translations.length) {
+                                if (entry.translations && entry.translations.length) {
                                     entry.translate('en')
                                     .then(()=>{
                                         translateIt(indx+1, cb);
                                     })
                                     .fail(cb);
                                 } else {
-                                    cb();
+                                    translateIt(indx+1, cb);
                                 }
                             }
                         }
@@ -1447,19 +1452,24 @@ console.error(err);
 
                             // replace the .activity with our shortened version:
                             allActivities.forEach((a)=>{
-                                a.activity = hashActivities[a.activity.id];
+                                if (a.activity) {
+                                    a.activity = hashActivities[a.activity.id];
+                                }
                             })
 
                             next();
                         })
+                    })
+                    .catch((err)=>{
+                        next(err);
                     })
                 },
 
 
                 // find the related Teams:
                 (next)=>{
-
-                    var teamIDs = allActivities.map((a)=>{ return a.activity.team; });
+                    // only search images with .activity populated
+                    var teamIDs = allActivities.filter((a)=>{ return a.activity; }).map((a)=>{ return a.activity.team; });
                     FCFMinistry.find({IDMinistry:teamIDs})
                     .then((list)=>{
                         relatedTeams = list;
@@ -1477,7 +1487,8 @@ console.error(err);
                         hashTeams[t.IDMinistry] = t;
                     })
 
-                    allActivities.forEach((a)=>{
+                    // only update images with .activity populated
+                    allActivities.filter((a)=>{ return a.activity; }).forEach((a)=>{
                         if (typeof a.activity.team == "number") {
                             var team = hashTeams[a.activity.team];
                             
@@ -1519,19 +1530,14 @@ console.error(err);
                             
                             next();
                         });
-                },
-
+                }
 
             ], (err, data)=>{
-
                 if (err) {
                     res.AD.error(err, 500);  
                     return;
                 }
-
-
                 res.AD.success(allActivities);
-
             })
             
 
