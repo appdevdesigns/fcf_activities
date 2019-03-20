@@ -220,13 +220,18 @@ module.exports = {
 
 // console.log('... Actions:', paList);
 // console.log('... look for these roles...', roles);
+                var found = false;
                 paList[0].roles.forEach(function(i) {
                     if (roles.indexOf(i.id) != -1) {
-                        ADCore.comm.success(res, {canAdd: true});
-                        return;
+                        found = true;
                     }
                 })
-                ADCore.comm.success(res, {canAdd: false});
+
+                if (found) {
+                    ADCore.comm.success(res, {canAdd: true});
+                } else {
+                    ADCore.comm.success(res, {canAdd: false});
+                }
                 return;
             })
             .catch(function(err){
@@ -248,10 +253,10 @@ module.exports = {
             FCFPerson.findOne({IDPerson: data.person})
             .populate('taggedInImages')
             .then(function(data2){
-        	var images = data2.taggedInImages;
-        	var curPerImg = 0;
-            var prevPerImg = 0;
-        	var d = new Date();
+            	var images = data2.taggedInImages;
+            	var curPerImg = 0;
+                var prevPerImg = 0;
+            	var d = new Date();
                 var n = d.getMonth();
                 var y = d.getFullYear();
                 var startDate = new Date();
