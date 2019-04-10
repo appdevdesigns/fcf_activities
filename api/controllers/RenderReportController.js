@@ -461,8 +461,11 @@ module.exports = {
 						next(err);
 					})
 					.then(function (p) {
-						if (p.length < 1)
-							next('Could not found any person.');
+                        if (typeof p == "undefined")
+                            next('Could not found any person.');
+
+                        if (p && p.length < 1)
+                            next('Could not found any person.');
 
 						persons = p;
 

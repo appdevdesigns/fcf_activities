@@ -1373,7 +1373,7 @@ console.error(err);
                         allActivities = list;
 
                         // use toClient() logic to get these fields:
-                        var copyFields = ['caption', 'caption_govt', 'image'];
+                        var copyFields = ['caption', 'caption_govt', 'image', 'date'];
                         allActivities.forEach((a)=>{
                             var simpleA = a.toClient('en');
                             copyFields.forEach((f)=>{
