@@ -1803,6 +1803,7 @@ console.error(err);
         if(filter._cas_retry) delete filter._cas_retry;
 
 
+        var allProjectsRef = []; // collect Projects IDs to look up the Project's details later
         var allProjects = []; // collect Projects to store teams in;
         var allTeams = [];  // collect all the Teams to return;
         var hashActivities = {}; // 
@@ -1830,7 +1831,7 @@ console.error(err);
 
             },
             
-            // find the Projects this Person is in.
+            // find the Ministry Teams this Person is in so we can discover what Project they are helping with
             (next)=>{
 
                 // limit to found person
@@ -1838,34 +1839,65 @@ console.error(err);
                 FCFMinistryTeamMember.find({IDPerson:PersonID, codeServiceStatus:"S"})
                 .then((list)=>{
 
+                    filter.IDMinistry = list.map((l)=>{return l.IDMinistry;});
+
                     // if "null" is sent as a filter value
                     Object.keys(filter).forEach((k)=>{
                         if (filter[k] == "null") {
                             filter[k] = null; 
                         }
                     })
-
-                    filter.IDProject = list.map((l)=>{return l.IDProject;});
                     
                     console.log(filter);
                     
-                    FCFProject.find(filter)
-                    .sort('ProjectNameEng ASC')
+                    FCFMinistry.find(filter)
                     .then((list)=>{
 
                         // convert to small team reference:
                         list.forEach((l)=>{
-                            allProjects.push({
-                                IDProject: l.IDProject,
-                                ProjectName: l.ProjectNameEng
-                            })
+                            allProjectsRef.push(l.IDProject);
                         });
-                        console.log(allProjects);
+                        console.log(allProjectsRef);
                         next();
                         
                     })
                     .catch(next);
 
+                })
+                .catch(next);
+
+            },
+            
+            // find the Projects this Person is in with the allProjectsRef from above.
+            (next)=>{
+                
+                filter = {};
+
+                filter.IDProject = allProjectsRef;
+
+                // if "null" is sent as a filter value
+                Object.keys(filter).forEach((k)=>{
+                    if (filter[k] == "null") {
+                        filter[k] = null; 
+                    }
+                })
+                
+                console.log(filter);
+                
+                FCFProject.find(filter)
+                .sort('ProjectNameEng ASC')
+                .then((list)=>{
+
+                    // convert to small team reference:
+                    list.forEach((l)=>{
+                        allProjects.push({
+                            IDProject: l.IDProject,
+                            ProjectName: l.ProjectNameEng
+                        })
+                    });
+                    console.log(allProjects);
+                    next();
+                    
                 })
                 .catch(next);
 
@@ -1959,7 +1991,8 @@ console.error(err);
                             hashActivities[l.id] = {
                                 id: l.id,
                                 activity_name:l.activity_name,
-                                date_start:l.date_start
+                                date_start:l.date_start,
+                                date_end:l.date_end
                             }
                         })
 
