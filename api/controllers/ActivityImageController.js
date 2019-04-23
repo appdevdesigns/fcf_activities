@@ -932,9 +932,15 @@ console.error(err);
 
                 }
                 
+                var status = req.param('status');
                 if (userIsApprover) {
-                    var status = req.param('status');
                     if (typeof status != "undefined") currImage.status = status;
+                }
+
+                // 23 April 2019 : decision to auto set status => new if this is 
+                // updating a denied photo with new data.
+                if (currImage.status == "denied" && status != "denied") {
+                    currImage.status = "new"; 
                 }
                 
                 currImage.save()
