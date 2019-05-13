@@ -67,7 +67,7 @@ module.exports = {
             // get the user's Person Entry
             function(next) {
 
-                AD.log('... finding Objectives where IDMinistry:'+minId);
+                AD.log(`... finding Objectives where IDMinistry:${minId} IDProject:${projectID}`);
 
                 // <2017-02-24> UPDATE:
                 // proper lookup is:
