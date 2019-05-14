@@ -533,7 +533,20 @@ function FCFCommonRejectionHandler(options) {
     var pops = options.pops || [];
     var transType = options.transType;
     var comment = options.comment;
-    var comments = JSON.parse(comment);
+    	// comment should look like:  '{"fixPhoto":true,"fixCaption":false,"fixLocation":false,"fixDate":false,"customMessage":"custom message here."}'
+
+    // 14 May 2019: Johnny
+    // we are catching an error on the backend where comment == "";  
+    // this will break the JSON.parse() command and prevent the email from being sent.
+    // I'm updating the code to handle a missing comment structure.
+    var comments = null;
+    if (comment && comment != "") {
+    	try{
+    		comments = JSON.parse(comment);
+    	} catch(e) {
+    		ADCore.error.log('Error trying to parse rejected Item\'s comments:', { options: options });
+    	}
+    }
     var image;
     var newmodel;
     
@@ -638,6 +651,12 @@ function FCFCommonRejectionHandler(options) {
                 },
                 // find the denier's email address from the FCF data tables
                 function (uploader, next) {
+
+                	if (!comments) {
+                		next(null, uploader);
+                		return;
+                	}
+
                     // console.log("cmdetails: ", comments);
                     FCFCMDetails.findOne({IDPerson:comments.deniedBy.IDPerson, codeCMType:"EM"})
                     .then(function(details){
@@ -697,7 +716,7 @@ function FCFCommonRejectionHandler(options) {
                         </table>
                         <h4 class="fix" style="margin: 0;padding: 15px;background: #dadada;">Log on to Adroit and please fix the following...</h4>
                         <ul style="margin: 0;padding: 0px;">`;
-
+if (comments) {
                     if (comments.fixPhoto) {
                     template += `<li style="list-style-type: none;margin: 0;padding: 10px 15px;border-top: 1px solid #CCC;">Photo is not appropriate. Please use a different photo.</li>`;
                     }
@@ -713,6 +732,12 @@ function FCFCommonRejectionHandler(options) {
                     if (comments.customMessage != "") {
                     template += `<li style="list-style-type: none;margin: 0;padding: 10px 15px;border-top: 1px solid #CCC;">`+ comments.customMessage +`</li>`;
                     }
+} else {
+                    template += `<li style="list-style-type: none;margin: 0;padding: 10px 15px;border-top: 1px solid #CCC;">Make sure Photo is appropriate.</li>`;
+                    template += `<li style="list-style-type: none;margin: 0;padding: 10px 15px;border-top: 1px solid #CCC;">Caption needs to be worded to include both WHAT you are doing and HOW it impacts Thai people.</li>`;
+                    template += `<li style="list-style-type: none;margin: 0;padding: 10px 15px;border-top: 1px solid #CCC;">Date of the photo should be within the current reporting period.</li>`;
+                    template += `<li style="list-style-type: none;margin: 0;padding: 10px 15px;border-top: 1px solid #CCC;">Location should provide complete details of the location: Name, Tambon and Ampoe.</li>`;
+}
                     template += `
                     </ul>
                     </div>
@@ -726,6 +751,11 @@ function FCFCommonRejectionHandler(options) {
                     </html>`;
         
         
+        			var replyTo = '"Adroit" <adroithelper@fcfthailand.org>';
+        			if (comments) {
+        				replyTo = '"'+comments.deniedBy.display_name+'" '+ comments.deniedBy.email
+        			}
+
                     image2base64(FCFCore.paths.images.activities(image.replace("_scaled", "_print"))) // you can also to use url
                     .then(
                         (response) => {
@@ -736,7 +766,7 @@ function FCFCommonRejectionHandler(options) {
                                 to: email,
                                 subject: 'Your Adroit Activity Photo has been Denied',
                                 html: template,
-                                replyTo: '"'+comments.deniedBy.display_name+'" '+ comments.deniedBy.email,
+                                replyTo: replyTo,
                                 attachments: [
                                     {   // encoded string as an attachment
                                         filename: image,
