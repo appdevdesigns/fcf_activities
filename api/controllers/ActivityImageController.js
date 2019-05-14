@@ -1796,7 +1796,7 @@ console.error(err);
     // [filter]:  you can add on a sails like query filter for the Teams to 
     // further condition which Teams you want:
     mobileMyProjects:function(req, res) {
-z
+
         var user = ADCore.user.current(req);
 
         var guid = user.GUID();
