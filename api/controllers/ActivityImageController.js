@@ -642,6 +642,13 @@ console.error(err);
 
         var tags = req.param('taggedPeople');
 
+        // ensure .taggedPeople is an array
+        // might be a single string '1492'
+        if (!Array.isArray(tags)) {
+            tags = [tags];
+        }
+
+
         var origImage = null;       // {string} name of original image
         var currImage = null;
         var updatedImage = null;
@@ -831,7 +838,6 @@ console.error(err);
             // 4) check for changes in taggedPeople and update currImage
             function(next) {
 
-                var tags = req.param('taggedPeople');
 
                 if (typeof tags == 'undefined') {
 
@@ -1813,6 +1819,36 @@ console.error(err);
         })
     },
 
+    /**
+     * mobileMyProjectMembers()
+     * Endpoint for returning a combined project & members response for a given user.
+     * this endpoint differs in that is attempts to be more efficient in the response
+     * by only sending the memberIDs for projects/teams and then having a single array
+     * of members to lookup the members in. (instead of embedding the data)
+     *
+     * the returned data structure should follow this basic format:
+     *  {
+     *    "projects": [
+     *      {
+     *        "teams": [
+     *          {
+     *            "memberIDs": [1,2, ... N]
+     *          }
+     *        ],
+     *        "memberIDs": [1,2, ... N]
+     *      }
+     *    ],
+     *    "members": [
+     *      {
+     *        "IDPerson": 1,
+     *        "avatar": "",
+     *        "display_name": ""
+     *      },
+     *      ...
+     *    ]
+     *  }
+     *
+     */
     mobileMyProjectMembers: function(req, res) {
         
         var user = ADCore.user.current(req);
@@ -1841,7 +1877,8 @@ console.error(err);
                             hashAllMembers[member.IDPerson] = member;
                             reducedMembers.push(member.IDPerson);
                         })
-                        project.members = reducedMembers;
+                        project.memberIDs = reducedMembers;
+                        project.members = [];
 
 
                         project.teams.forEach((team)=>{
