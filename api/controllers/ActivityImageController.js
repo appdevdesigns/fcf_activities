@@ -344,10 +344,22 @@ module.exports = {
         var fields = ['image', 'activity', 'date', 'caption' ];
         var tags = req.param('taggedPeople');
 
-        // ensure .taggedPeople is an array
-        // might be a single string '1492'
-        if (!Array.isArray(tags)) {
-            tags = [tags];
+        if (tags) {
+
+            // if tags were provided, but they sent an empty string: ""
+            // that's an error.
+            if (tags == "") {
+                var err = new Error('Invalid Tag identifier:'+tags);
+                    ADCore.comm.error(res, err, 422);
+                    return;
+            }
+
+            // ensure .taggedPeople is an array
+            // might be a single string '1492'
+            if (!Array.isArray(tags)) {
+                tags = [tags];
+            }
+            
         }
 
         var values = {};
@@ -642,11 +654,24 @@ console.error(err);
 
         var tags = req.param('taggedPeople');
 
-        // ensure .taggedPeople is an array
-        // might be a single string '1492'
-        if (!Array.isArray(tags)) {
-            tags = [tags];
+        if (tags) {
+
+            // if tags were provided, but they sent an empty string: ""
+            // that's an error.
+            if (tags == "") {
+                var err = new Error('Invalid Tag identifier:'+tags);
+                    ADCore.comm.error(res, err, 422);
+                    return;
+            }
+
+            // ensure .taggedPeople is an array
+            // might be a single string '1492'
+            if (!Array.isArray(tags)) {
+                tags = [tags];
+            }
+            
         }
+
 
 
         var origImage = null;       // {string} name of original image
