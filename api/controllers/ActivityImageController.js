@@ -1278,16 +1278,31 @@ console.error(err);
     
     
     upload: function(req, res) {
+        var user = ADCore.user.current(req);
+        var username = user.username();
+        var logStamp = "image-upload:"+username+": ";
+        var log = function(text) {
+            console.log(logStamp+text);
+        }
+        log("begin.");
         req.file('imageFile').upload({}, function(err, uploadList) {
             
             if (err) {
+                try {
+                    log("req.file().upload() error:" + JSON.stringify(err));
+                } catch (e) {
+                    log("req.file().upload() error: <err obj has json errors>");
+                }
                 ADCore.comm.error(res, err);
             } 
             else {
                 
+
                 var tempFile = uploadList[0].fd;
                 var imageName = path.basename(tempFile);
                 var processPath = process.cwd();
+
+                log("file uploaded:"+tempFile);
                 
                 // Web path to the image
                 var targetPathWeb = path.join('data', 'fcf', 'images', 'temp');
@@ -1309,16 +1324,19 @@ console.error(err);
                 
                 // Process image and save to target directory
                 var listRenders = getRenderList();
-                processImageFile(listRenders, tempFile, targetPath)
+                // renders, sourceFile, targetDir
+                processImageFile({ renders: listRenders, sourceFile:tempFile, targetDir:targetPath, logStamp:logStamp})
                 .then(() => {
                     clearInterval(interval);
                     isFinished = true;
+                    log("image successfully rendered.");
                     res.AD.success({ 
                         path: path.join(targetPathWeb, imageName), 
                         name: imageName 
                     }, null, true);
                 })
                 .catch((err) => {
+                    log("error rendering image: "+JSON.stringify(err));
                     ADCore.error.log(
                         "FCFActivities:ActivityImageController:upload() Error Rendering File.", 
                         { 
@@ -2041,7 +2059,9 @@ function getRenderList() {
  * based on the given `renders` array. Processing is handled by the external
  * ImageMagick 'convert' utility.
  *
- * @param {array} renders
+ * @param {obj} options  An object of the required parameters for this fn:
+ *
+ * options.renders {array}
  *      Array of basic objects. Each object specifies how an additional
  *      render of the image will be done. 
  *      See getRenderList() and ImageRenders above.
@@ -2057,18 +2077,25 @@ function getRenderList() {
  *      ]
  *      Should this even be a function parameter? We could just call
  *      the getRenderList() function directly here.
- * @param {string} sourceFile
+ * options.sourceFile {string} 
  *      Full path and filename of the source image.
- * @param {string} [targetDir]
+ * options.targetDir {string} (optional)
  *      Full path of the target directory where the image files will be
  *      written to. Default is the same directory as source.
+ * options.logStamp {string} (optional)
+ *      String identifier for logging to connect the rendering logs with 
+ *      the other logs 
  * @return {Promise}
  */
-function processImageFile(renders, sourceFile, targetDir=null) {
+function processImageFile(options) { 
+    // renders, sourceFile, targetDir=null) {
     return new Promise((resolve, reject) => {
-        //// Parse the file path
         
-        var parsed = path.parse(sourceFile);
+        // default renders 
+        options.renders = options.renders || [];
+
+        //// Parse the file path
+        var parsed = path.parse(options.sourceFile);
         // path to the source file
         var sourceDir = parsed.dir;
         // filename with no directory or extension
@@ -2076,9 +2103,13 @@ function processImageFile(renders, sourceFile, targetDir=null) {
         // file extension
         var extension = parsed.ext;
         // path to the target file
-        if (!targetDir) {
-            targetDir = sourceDir;
+        if (!options.targetDir) {
+            options.targetDir = sourceDir;
         }
+
+        var logStamp = options.logStamp || "image-upload: ??: ";
+
+        console.log(logStamp+" starting file renders.");
         
         //// Process image
         async.series([
@@ -2086,10 +2117,10 @@ function processImageFile(renders, sourceFile, targetDir=null) {
             // Ensure image has correct orientation based on EXIF data and save
             // to target directory.
             (next) => {
-                var targetFile = path.join(targetDir, baseName + extension);
+                var targetFile = path.join(options.targetDir, baseName + extension);
                 // ImageMagick
                 child_process.exec(
-                    `convert "${sourceFile}" -auto-orient "${targetFile}"`,
+                    `convert "${options.sourceFile}" -auto-orient "${targetFile}"`,
                     (err, stdout, stderr) => {
                         if (err) {
                             console.error(
@@ -2108,7 +2139,7 @@ function processImageFile(renders, sourceFile, targetDir=null) {
             // Create additional renders and save to target directory.
             (next) => {
                 async.eachSeries(
-                    renders, 
+                    options.renders, 
                     (renderOpts, renderDone) => {
                         // '-quality' option applicable for JPEG images
                         var qualityOpt = '';
@@ -2117,11 +2148,13 @@ function processImageFile(renders, sourceFile, targetDir=null) {
                         }
                         
                         // Append the name for this render
-                        var targetFile = path.join(targetDir, baseName + renderOpts.name + extension);
+                        var targetFile = path.join(options.targetDir, baseName + renderOpts.name + extension);
                         
+                        var startTime = process.hrtime();
+
                         // ImageMagick
                         child_process.exec(
-                            `convert "${sourceFile}" -auto-orient -resize ${renderOpts.width}x${renderOpts.height} ${qualityOpt} "${targetFile}"`,
+                            `convert "${options.sourceFile}" -auto-orient -resize ${renderOpts.width}x${renderOpts.height} ${qualityOpt} "${targetFile}"`,
                             (err, stdout, stderr) => {
                                 if (err) {
                                     console.error(
@@ -2131,6 +2164,7 @@ function processImageFile(renders, sourceFile, targetDir=null) {
                                     renderDone(err);
                                 }
                                 else {
+                                    console.log(logStamp+' rendered: '+elapsedTime(startTime)+" :"+targetFile.split(path.sep).pop());
                                     renderDone();
                                 }
                             }
