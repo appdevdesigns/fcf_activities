@@ -2964,7 +2964,7 @@ function ProjectMembers(guid, query, cb) {
                 } else {
 
                     var team = list.shift();
-                    FCFMinistryTeamMember.find({IDMinistry:team.IDMinistry})
+                    FCFMinistryTeamMember.find({IDMinistry:team.IDMinistry, codeServiceStatus:"S"})
                     .then((listMembers)=>{
 
                         var memberIDs = listMembers.map((tm)=>{ return tm.IDPerson; });
