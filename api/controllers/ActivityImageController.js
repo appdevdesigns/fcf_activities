@@ -627,6 +627,7 @@ console.error(err);
             if (err) {
                 ADCore.comm.error(res, err);
             } else {
+                finalData.createdAt = newImage.createdAt;
                 AD.log('... returning data to client:', finalData);
                 ADCore.comm.success(res, finalData );
 
