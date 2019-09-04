@@ -628,6 +628,7 @@ console.error(err);
                 ADCore.comm.error(res, err);
             } else {
                 finalData.createdAt = newImage.createdAt;
+                finalData.updatedAt = newImage.updatedAt;
                 AD.log('... returning data to client:', finalData);
                 ADCore.comm.success(res, finalData );
 
@@ -1082,6 +1083,8 @@ console.error(err);
                 AD.log('... finalData:', finalData);
                 AD.log("<green>activityimage.update() finished</green>");
                 // res.send(finalData);
+                finalData.createdAt = currImage.createdAt;
+                finalData.updatedAt = currImage.updatedAt;
                 ADCore.comm.success(res,finalData);
 
                 // PostApprovalRequest({ data: currImage, action:'updated', languageCode:langCode });
