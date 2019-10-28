@@ -137,6 +137,9 @@ data.activity_description_govt = req.param('activity_description_govt');
             ADCore.comm.error(res, err, 400);
             return;
         }
+        if (!Array.isArray(objectives)) {
+            objectives = [objectives];
+        }
 
         // if date_end is '', save NULL instead
         if (data.date_end == '') {
