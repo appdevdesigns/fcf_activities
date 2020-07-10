@@ -18,6 +18,21 @@
         </dvi>
     </div>
     <div class="form-horizontal">
+        <!--People in Photo-->
+        <div class="form-group">
+            <div class="col-sm-3">
+                <strong><span app-label-key="fcf.imageapproval.peopleInPhoto">People in photo:</span></strong>
+            </div>
+            <div class="col-sm-9">
+                <div class="dataView">
+                    <% data.taggedPeopleNames.forEach(function(person, idx, array){ %>
+                        <%= person %><% if (idx !== array.length - 1) { %>, <% } %>
+                    <%  }) %>
+                </div>
+                <div people-list="<% data.taggedPeopleNames.forEach(function(person, idx, array){ %><%= person %><% if (idx !== array.length - 1) { %>,<% } %><%  }) %>" class="dataEdit selectivity-input" id="peopleTags" name="tags" style="width: 100%;"></div>
+            </div>
+        </div>
+        <!--/People in Photo-->  
         <!--Caption--> 
         <div class="form-group">
             <div class="col-sm-3">
@@ -58,21 +73,6 @@
             </div>
         </div>
         <!--/Date-->
-        <!--People in Photo-->
-        <div class="form-group">
-            <div class="col-sm-3">
-                <strong><span app-label-key="fcf.imageapproval.peopleInPhoto">People in photo:</span></strong>
-            </div>
-            <div class="col-sm-9">
-                <div class="dataView">
-                    <% data.taggedPeopleNames.forEach(function(person, idx, array){ %>
-                        <%= person %><% if (idx !== array.length - 1) { %>, <% } %>
-                    <%  }) %>
-                </div>
-                <div people-list="<% data.taggedPeopleNames.forEach(function(person, idx, array){ %><%= person %><% if (idx !== array.length - 1) { %>,<% } %><%  }) %>" class="dataEdit selectivity-input" id="peopleTags" name="tags" style="width: 100%;"></div>
-            </div>
-        </div>
-        <!--/People in Photo-->  
     </div>
 </div> 
 </form>
