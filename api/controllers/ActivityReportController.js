@@ -248,8 +248,9 @@ module.exports = {
 
         var teamID = req.param('teamID');
         var projectID = req.param('projectID');
+        var projectIDs = req.param('projectIDs');
 
-        if (!teamID && !projectID) {
+        if (!teamID && !projectID && !projectIDs) {
 
             // if no team provided, just retun empty []
             ADCore.comm.success(res, []);
@@ -287,6 +288,25 @@ module.exports = {
                         })                        
                     } else if (projectID) {
                         FCFMinistryTeamMember.find({IDProject:projectID, codeServiceStatus:"S"})
+                        .then(function(list){
+
+                            if (list) {
+
+                                list.forEach(function(entry){
+                                    if (entry.IDPerson) {
+                                        peopleIDs.push(entry.IDPerson);
+                                    }
+                                })
+                            }
+
+                            next();
+                        })
+                        .catch(function(err){
+                            AD.log(err);
+                            next(err);
+                        })
+                    } else if (projectIDs) {
+                        FCFMinistryTeamMember.find({IDProject:projectIDs, codeServiceStatus:"S"})
                         .then(function(list){
 
                             if (list) {

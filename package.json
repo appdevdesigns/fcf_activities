@@ -1,39 +1,131 @@
 {
-  "name": "fcf_activities",
-  "version": "0.1.0",
-  "description": "(plugin) This plugin allows users to submit activity photos for their Visa requirements.",
-  "main": "module.js",
-  "directories": {
-    "test": "test"
+  "_args": [
+    [
+      {
+        "raw": "github:appdevdesigns/fcf_activities#master",
+        "scope": null,
+        "escapedName": null,
+        "name": null,
+        "rawSpec": "github:appdevdesigns/fcf_activities#master",
+        "spec": "github:appdevdesigns/fcf_activities#master",
+        "type": "hosted",
+        "hosted": {
+          "type": "github",
+          "ssh": "git@github.com:appdevdesigns/fcf_activities.git#master",
+          "sshUrl": "git+ssh://git@github.com/appdevdesigns/fcf_activities.git#master",
+          "httpsUrl": "git+https://github.com/appdevdesigns/fcf_activities.git#master",
+          "gitUrl": "git://github.com/appdevdesigns/fcf_activities.git#master",
+          "shortcut": "github:appdevdesigns/fcf_activities#master",
+          "directUrl": "https://raw.githubusercontent.com/appdevdesigns/fcf_activities/master/package.json"
+        }
+      },
+      "/data/www/nodejs/live/adroit"
+    ]
+  ],
+  "_from": "appdevdesigns/fcf_activities#master",
+  "_id": "fcf_activities@0.1.0",
+  "_inCache": true,
+  "_location": "/fcf_activities",
+  "_phantomChildren": {
+    "bmp-js": "0.0.3",
+    "buffer": "5.1.0",
+    "circular-json": "0.1.6",
+    "colog": "1.0.4",
+    "depd": "1.1.2",
+    "es6-promise": "3.3.1",
+    "exif-parser": "0.1.9",
+    "file-type": "3.9.0",
+    "graceful-fs": "4.1.11",
+    "jpeg-js": "0.2.0",
+    "jquery-deferred": "0.3.1",
+    "jsonfile": "2.4.0",
+    "load-bmfont": "1.3.0",
+    "mime": "1.3.4",
+    "mkdirp": "0.5.1",
+    "moment": "2.22.1",
+    "node-uuid": "1.4.8",
+    "phin": "2.9.0",
+    "pixelmatch": "4.0.2",
+    "pngjs": "3.3.3",
+    "read": "1.0.7",
+    "request": "2.85.0",
+    "safer-buffer": "2.1.2",
+    "statuses": "1.5.0",
+    "supertest": "1.2.0",
+    "tinycolor2": "1.4.1",
+    "toidentifier": "1.0.0",
+    "unpipe": "1.0.0",
+    "utif": "1.3.0",
+    "win-spawn": "2.0.0"
   },
-  "scripts": {
-    "test": "make test",
-    "postinstall": "node setup/setup.js",
-    "postupdate": "node setup/setup.js"
+  "_requested": {
+    "raw": "github:appdevdesigns/fcf_activities#master",
+    "scope": null,
+    "escapedName": null,
+    "name": null,
+    "rawSpec": "github:appdevdesigns/fcf_activities#master",
+    "spec": "github:appdevdesigns/fcf_activities#master",
+    "type": "hosted",
+    "hosted": {
+      "type": "github",
+      "ssh": "git@github.com:appdevdesigns/fcf_activities.git#master",
+      "sshUrl": "git+ssh://git@github.com/appdevdesigns/fcf_activities.git#master",
+      "httpsUrl": "git+https://github.com/appdevdesigns/fcf_activities.git#master",
+      "gitUrl": "git://github.com/appdevdesigns/fcf_activities.git#master",
+      "shortcut": "github:appdevdesigns/fcf_activities#master",
+      "directUrl": "https://raw.githubusercontent.com/appdevdesigns/fcf_activities/master/package.json"
+    }
   },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/appdevdesigns/fcf_activities.git"
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "git://github.com/appdevdesigns/fcf_activities.git#849712e8d6c5283405feca2cc567ad884368f865",
+  "_shasum": "296048ec9ad40e7defb253ec9649ef645398a650",
+  "_shrinkwrap": null,
+  "_spec": "github:appdevdesigns/fcf_activities#master",
+  "_where": "/data/www/nodejs/live/adroit",
+  "author": {
+    "name": "Johnny Hausman"
   },
-  "author": "Johnny Hausman",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/appdevdesigns/fcf_activities/issues"
   },
-  "homepage": "https://github.com/appdevdesigns/fcf_activities",
   "dependencies": {
-    "ad-utils": "git://github.com/appdevdesigns/ad-utils",
+    "ad-utils": "git://github.com/appdevdesigns/ad-utils.git",
     "fs-extra": "^2.1.2",
     "image-to-base64": "^2.0.1",
-    "jimp": "git://github.com/appdevdesigns/jimp#master",
+    "jimp": "git://github.com/appdevdesigns/jimp.git#master",
     "lodash": "^4.13.1",
     "moment": "^2.12.0",
     "nodemailer": "^5.1.1"
   },
+  "description": "(plugin) This plugin allows users to submit activity photos for their Visa requirements.",
   "devDependencies": {
     "chai": "^1.10.0",
     "mocha": "^2.1.0",
     "mocha-phantomjs": "^3.5.2",
     "phantomjs": "^1.9.13"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "gitHead": "849712e8d6c5283405feca2cc567ad884368f865",
+  "homepage": "https://github.com/appdevdesigns/fcf_activities",
+  "license": "ISC",
+  "main": "module.js",
+  "name": "fcf_activities",
+  "optionalDependencies": {},
+  "readme": "fcf_activities ![Build Status](https://travis-ci.org/appdevdesigns/fcf_activities.png)\n================\n\nA new plugin.",
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/appdevdesigns/fcf_activities.git"
+  },
+  "scripts": {
+    "postinstall": "node setup/setup.js",
+    "postupdate": "node setup/setup.js",
+    "test": "make test"
+  },
+  "version": "0.1.0"
 }

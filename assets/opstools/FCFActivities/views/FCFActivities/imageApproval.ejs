@@ -4,6 +4,8 @@
 #language_code:en
 -->
 <!--Image Name-->
+<form id="approvalForm">
+<input type="hidden" name="id" value="<%= data.id %>" />
 <div id="opsportal-activityName" class="off-botm20">
     <input type="hidden" class="form-control" name="language_code" value="<%= language_code || 'en' %>" >
     <div class="form-group">
@@ -22,7 +24,11 @@
                 <strong><span app-label-key="fcf.imageapproval.caption">Caption:</span></strong>
             </div>
             <div class="col-sm-9">
-                <%= data.caption %>
+                <textarea id="captionTextArea" name="caption" class="dataEdit" style="width: 100%; height: 70px; display: none;" oninput="var left = 240-this.value.length; if (left < 0) { left = 'Too many characters! (remove '+ (-1*left) +' characters)'; document.getElementById('charCountApproval').style.color = '#F44336' } else { document.getElementById('charCountApproval').style.color = '' } document.getElementById('charCountApproval').innerHTML = left;"><%= data.caption %></textarea>
+                <span style="padding-top: 5px; display: none;" class="dataEdit pull-right">Characters remaining: <span style="font-weight: bold;" id="charCountApproval">240</span></span>
+                <div class="dataView">
+                    <%= data.caption %>
+                </div>
             </div>
         </div>
         <!--/Caption-->
@@ -32,7 +38,10 @@
                 <strong><span app-label-key="fcf.imageapproval.caption_govt">Activity Location</span>:</strong>
             </div>
             <div class="col-sm-9">
-                <%= data.caption_govt %>
+                <input name="caption_govt" class="dataEdit" type="text" style="width: 100%; display: none;" value="<%= data.caption_govt %>" />
+                <div class="dataView">
+                    <%= data.caption_govt %>
+                </div>
             </div>
         </div>
         <!--/Caption Govt-->
@@ -42,7 +51,10 @@
                 <strong><span app-label-key="fcf.imageapproval.date">Date:</span></strong>
             </div>
             <div class="col-sm-9">
-                <%= data.date %>
+                <input name="date" class="dataEdit" type="date" style="width: 100%; display: none;" value="<%= data.date %>" />
+                <div class="dataView">
+                    <%= data.date %>
+                </div>
             </div>
         </div>
         <!--/Date-->
@@ -52,14 +64,16 @@
                 <strong><span app-label-key="fcf.imageapproval.peopleInPhoto">People in photo:</span></strong>
             </div>
             <div class="col-sm-9">
-                <!--List of people with closed button-->
-                <% data.taggedPeopleNames.forEach(function(person, idx, array){ %>
-                    <%= person %><% if (idx !== array.length - 1) { %>, <% } %>
-                <%  }) %>
-                <!--/End here-->
+                <div class="dataView">
+                    <% data.taggedPeopleNames.forEach(function(person, idx, array){ %>
+                        <%= person %><% if (idx !== array.length - 1) { %>, <% } %>
+                    <%  }) %>
+                </div>
+                <div people-list="<% data.taggedPeopleNames.forEach(function(person, idx, array){ %><%= person %><% if (idx !== array.length - 1) { %>,<% } %><%  }) %>" class="dataEdit selectivity-input" id="peopleTags" name="tags" style="width: 100%;"></div>
             </div>
         </div>
         <!--/People in Photo-->  
     </div>
 </div> 
+</form>
 <!--/Image Name-->
